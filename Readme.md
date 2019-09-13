@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Алексей Бездетко](https://up.htmlacademy.ru/javascript/18/user/892681).
-* Наставник: `Неизвестно`.
+* Наставник: [Елена Валеева](https://htmlacademy.ru/profile/nikkie8).
 
 ---
 
