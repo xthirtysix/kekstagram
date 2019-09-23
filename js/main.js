@@ -29,7 +29,6 @@ var FEED_LENGTH = 25;
 
 var MESSAGE_LENGTH = 2;
 
-
 /* Перемешивает значения в массиве */
 var shufleArray = function (arr) {
   var i;
@@ -60,8 +59,7 @@ var generateMessage = function (messages, length) {
   var shuffledMessages = shufleArray(messages);
   var message = '';
 
-  /* Если массив с сообщениями пустой, выводим пустое сообщение */
-  if (messages.length === false) {
+  if (messages.length === 0) {
     return '';
   } else {
 
@@ -80,8 +78,6 @@ var generateMessage = function (messages, length) {
 var getRandomNum = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
-
-/* Ниже непроверенный код */
 
 var getUrl = function (fileName) {
   return 'photos/' + fileName + '.jpg';
