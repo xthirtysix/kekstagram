@@ -23,30 +23,8 @@ var MESSAGES = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
 ];
 
-var IMAGES_COUNT = 25;
-
-var FEED_LENGTH = 25;
-
-var MAX_MESSAGE_LENGTH = 2;
-
-var MIN_LIKES = 15;
-
-var MAX_LIKES = 200;
-
-var MIN_COMMENTS = 1;
-
-var MAX_COMMENTS = 5;
-
-var AVATARS_COUNT = 6;
-
-var postTemplate = document
-  .querySelector('#picture')
-  .content.querySelector('a');
-
-var pictureFeed = document.querySelector('.pictures');
-
 /* Перемешивает значения в массиве */
-var shufleArray = function (arr) {
+var shuffleArray = function (arr) {
   var i;
   var j;
   var k;
@@ -60,44 +38,31 @@ var shufleArray = function (arr) {
   return arr;
 };
 
-/* Перемешивает значения в массиве последовательныхчисел начиная с startNum, длиной в length */
-var shuffleNumArray = function (startNum, length) {
-  var arr = [];
-
-  for (var i = startNum; i < startNum + length; i++) {
-    arr.push(i);
-  }
-
-  return shufleArray(arr);
-};
-
 var generateMessage = function (messageTemplates, length) {
-  var shuffledMessages = shufleArray(messageTemplates);
+  var shuffledMessages = shuffleArray(messageTemplates);
   var message = '';
 
-  if (messageTemplates.length === 0) {
-    return '';
-  } else {
-
-    for (var i = 0; i < length; i++) {
-      if (i === 0) {
-        message = message + shuffledMessages[i];
-      } else {
-        message = message + ' ' + shuffledMessages[i];
-      }
+  for (var i = 0; i < length; i++) {
+    if (i === 0) {
+      message = message + shuffledMessages[i];
+    } else {
+      message = message + ' ' + shuffledMessages[i];
     }
-
-    return message;
   }
+  return message;
 };
 
 var getRandomNum = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-var getUrl = function (fileName) {
+var getPostImageUrl = function (fileName) {
   return 'photos/' + fileName + '.jpg';
 };
+
+var AVATARS_COUNT = 6;
+
+var MAX_MESSAGE_LENGTH = 2;
 
 var generateComment = function () {
   return {
@@ -107,33 +72,42 @@ var generateComment = function () {
   };
 };
 
+var MIN_COMMENTS = 1;
+
+var MAX_COMMENTS = 5;
+
+var generatCommentsFeed = function () {
+  var comments = [];
+  var commentsCount = getRandomNum(MIN_COMMENTS, MAX_COMMENTS);
+
+  for (var i = 0; i < commentsCount; i++) {
+    comments.push(generateComment());
+  }
+
+  return comments;
+};
+
+var MIN_LIKES = 15;
+
+var MAX_LIKES = 200;
+
 var generateFeed = function (length) {
-  var arr = shuffleNumArray(0, length);
   var feed = [];
 
   for (var i = 0; i < length; i++) {
     var post = {};
-    var commentsCount = getRandomNum(MIN_COMMENTS, MAX_COMMENTS);
 
     /* Добавляет изображение */
-    if (length <= IMAGES_COUNT) {
-      post.url = getUrl(arr[i] + 1);
-    } else {
-      post.url = getUrl(getRandomNum(1, arr.length));
-    }
+    post.url = getPostImageUrl(i + 1);
 
     /* Добавляет описание */
-    post.description = '';
+    post.description = 'Сфотографировано на калькулятор';
 
     /* Добавляет лайки */
     post.likes = getRandomNum(MIN_LIKES, MAX_LIKES);
 
     /* Добавляет комментарии */
-    post.comments = [];
-
-    for (var j = 0; j < commentsCount; j++) {
-      post.comments.push(generateComment());
-    }
+    post.comments = generatCommentsFeed();
 
     /* Добавляет пост в ленту */
     feed.push(post);
@@ -141,6 +115,10 @@ var generateFeed = function (length) {
 
   return feed;
 };
+
+var postTemplate = document
+  .querySelector('#picture')
+  .content.querySelector('a');
 
 
 var renderPost = function (obj) {
@@ -153,6 +131,8 @@ var renderPost = function (obj) {
   return post;
 };
 
+var pictureFeed = document.querySelector('.pictures');
+
 var renderFeed = function (feed) {
   var fragment = document.createDocumentFragment();
 
@@ -163,4 +143,6 @@ var renderFeed = function (feed) {
   return pictureFeed.appendChild(fragment);
 };
 
-renderFeed(generateFeed(FEED_LENGTH));
+var IMAGES_COUNT = 25;
+
+renderFeed(generateFeed(IMAGES_COUNT));
