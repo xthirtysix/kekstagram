@@ -23,6 +23,20 @@ var MESSAGES = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
 ];
 
+var AVATARS_COUNT = 6;
+
+var MAX_MESSAGE_LENGTH = 2;
+
+var MIN_COMMENTS = 1;
+
+var MAX_COMMENTS = 5;
+
+var MIN_LIKES = 15;
+
+var MAX_LIKES = 200;
+
+var IMAGES_COUNT = 25;
+
 /* Перемешивает значения в массиве */
 var shuffleArray = function (arr) {
   var i;
@@ -60,10 +74,6 @@ var getPostImageUrl = function (fileName) {
   return 'photos/' + fileName + '.jpg';
 };
 
-var AVATARS_COUNT = 6;
-
-var MAX_MESSAGE_LENGTH = 2;
-
 var generateComment = function () {
   return {
     avatar: 'img/avatar-' + getRandomNum(1, AVATARS_COUNT) + '.svg',
@@ -71,10 +81,6 @@ var generateComment = function () {
     name: NAMES[getRandomNum(0, NAMES.length - 1)]
   };
 };
-
-var MIN_COMMENTS = 1;
-
-var MAX_COMMENTS = 5;
 
 var generatCommentsFeed = function () {
   var comments = [];
@@ -86,10 +92,6 @@ var generatCommentsFeed = function () {
 
   return comments;
 };
-
-var MIN_LIKES = 15;
-
-var MAX_LIKES = 200;
 
 var generateFeed = function (length) {
   var feed = [];
@@ -142,7 +144,5 @@ var renderFeed = function (feed) {
 
   return pictureFeed.appendChild(fragment);
 };
-
-var IMAGES_COUNT = 25;
 
 renderFeed(generateFeed(IMAGES_COUNT));
