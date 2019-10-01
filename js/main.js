@@ -23,6 +23,20 @@ var MESSAGES = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
 ];
 
+var AVATARS_COUNT = 6;
+
+var MAX_MESSAGE_LENGTH = 2;
+
+var MIN_COMMENTS = 1;
+
+var MAX_COMMENTS = 5;
+
+var MIN_LIKES = 15;
+
+var MAX_LIKES = 200;
+
+var IMAGES_COUNT = 25;
+
 /* Перемешивает значения в массиве */
 var shuffleArray = function (arr) {
   var i;
@@ -60,10 +74,6 @@ var getPostImageUrl = function (fileName) {
   return 'photos/' + fileName + '.jpg';
 };
 
-var AVATARS_COUNT = 6;
-
-var MAX_MESSAGE_LENGTH = 2;
-
 var generateComment = function () {
   return {
     avatar: 'img/avatar-' + getRandomNum(1, AVATARS_COUNT) + '.svg',
@@ -72,11 +82,7 @@ var generateComment = function () {
   };
 };
 
-var MIN_COMMENTS = 1;
-
-var MAX_COMMENTS = 5;
-
-var generatCommentsFeed = function () {
+var generateCommentsFeed = function () {
   var comments = [];
   var commentsCount = getRandomNum(MIN_COMMENTS, MAX_COMMENTS);
 
@@ -86,10 +92,6 @@ var generatCommentsFeed = function () {
 
   return comments;
 };
-
-var MIN_LIKES = 15;
-
-var MAX_LIKES = 200;
 
 var generateFeed = function (length) {
   var feed = [];
@@ -107,7 +109,7 @@ var generateFeed = function (length) {
     post.likes = getRandomNum(MIN_LIKES, MAX_LIKES);
 
     /* Добавляет комментарии */
-    post.comments = generatCommentsFeed();
+    post.comments = generateCommentsFeed();
 
     /* Добавляет пост в ленту */
     feed.push(post);
@@ -143,6 +145,61 @@ var renderFeed = function (feed) {
   return pictureFeed.appendChild(fragment);
 };
 
-var IMAGES_COUNT = 25;
+var feed = generateFeed(IMAGES_COUNT);
 
-renderFeed(generateFeed(IMAGES_COUNT));
+renderFeed(feed);
+
+var bigPicture = document.querySelector('.big-picture');
+
+bigPicture.classList.remove('hidden');
+
+var bigPictureSocial = bigPicture.querySelector('.big-picture__social');
+
+var bigPictureDescription = bigPictureSocial.querySelector('.social__caption');
+
+var bigPictureLikesCount = bigPictureSocial.querySelector('.likes-count');
+
+var bigPictureCommentsCount = bigPictureSocial.querySelector('.comments-count');
+
+var bigPictureCommentsList = bigPictureSocial.querySelector('.social__comments');
+
+var bigPictureComment = bigPictureCommentsList.querySelector('.social__comment');
+
+var renderComment = function (comment) {
+  var message = bigPictureComment.cloneNode(true);
+  var messagePicture = message.querySelector('.social__picture');
+  var messageText = message.querySelector('.social__text');
+
+  messagePicture.src = comment.avatar;
+  messagePicture.alt = comment.name;
+  messageText.textContent = comment.message;
+
+  return bigPictureCommentsList.appendChild(message);
+};
+
+var renderBigPicture = function (post) {
+  bigPicture.querySelector('.big-picture__img img').src = post.url;
+  bigPictureLikesCount.textContent = post.likes;
+  bigPictureCommentsCount.textContent = post.comments.length;
+  bigPictureDescription.textContent = post.description;
+
+  bigPictureCommentsList.innerHTML = '';
+
+  post.comments.forEach(function (element) {
+    return renderComment(element);
+  });
+
+  return bigPictureSocial;
+};
+
+var commentsCount = bigPicture.querySelector('.social__comment-count');
+var commentsLoader = bigPicture.querySelector('.comments-loader');
+
+var hideVisually = function (element) {
+  element.classList.add('visually-hidden');
+};
+
+hideVisually(commentsLoader);
+hideVisually(commentsCount);
+
+renderBigPicture(feed[0]);
