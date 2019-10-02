@@ -24,20 +24,14 @@ var MESSAGES = [
 ];
 
 var AVATARS_COUNT = 6;
-
 var MAX_MESSAGE_LENGTH = 2;
-
 var MIN_COMMENTS = 1;
-
 var MAX_COMMENTS = 5;
-
 var MIN_LIKES = 15;
-
 var MAX_LIKES = 200;
-
 var IMAGES_COUNT = 25;
 
-/* Перемешивает значения в массиве */
+// Перемешивает значения в массиве
 var shuffleArray = function (arr) {
   var i;
   var j;
@@ -99,19 +93,19 @@ var generateFeed = function (length) {
   for (var i = 0; i < length; i++) {
     var post = {};
 
-    /* Добавляет изображение */
+    // Добавляет изображение
     post.url = getPostImageUrl(i + 1);
 
-    /* Добавляет описание */
+    // Добавляет описание
     post.description = 'Сфотографировано на калькулятор';
 
-    /* Добавляет лайки */
+    // Добавляет лайки
     post.likes = getRandomNum(MIN_LIKES, MAX_LIKES);
 
-    /* Добавляет комментарии */
+    // Добавляет комментарии
     post.comments = generateCommentsFeed();
 
-    /* Добавляет пост в ленту */
+    // Добавляет пост в ленту
     feed.push(post);
   }
 
@@ -154,15 +148,7 @@ var bigPicture = document.querySelector('.big-picture');
 bigPicture.classList.remove('hidden');
 
 var bigPictureSocial = bigPicture.querySelector('.big-picture__social');
-
-var bigPictureDescription = bigPictureSocial.querySelector('.social__caption');
-
-var bigPictureLikesCount = bigPictureSocial.querySelector('.likes-count');
-
-var bigPictureCommentsCount = bigPictureSocial.querySelector('.comments-count');
-
 var bigPictureCommentsList = bigPictureSocial.querySelector('.social__comments');
-
 var bigPictureComment = bigPictureCommentsList.querySelector('.social__comment');
 
 var renderComment = function (comment) {
@@ -177,8 +163,13 @@ var renderComment = function (comment) {
   return bigPictureCommentsList.appendChild(message);
 };
 
+var bigPicrureImage = bigPicture.querySelector('.big-picture__img img');
+var bigPictureLikesCount = bigPictureSocial.querySelector('.likes-count');
+var bigPictureCommentsCount = bigPictureSocial.querySelector('.comments-count');
+var bigPictureDescription = bigPictureSocial.querySelector('.social__caption');
+
 var renderBigPicture = function (post) {
-  bigPicture.querySelector('.big-picture__img img').src = post.url;
+  bigPicrureImage.src = post.url;
   bigPictureLikesCount.textContent = post.likes;
   bigPictureCommentsCount.textContent = post.comments.length;
   bigPictureDescription.textContent = post.description;
