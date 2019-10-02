@@ -145,7 +145,7 @@ renderFeed(feed);
 
 var bigPicture = document.querySelector('.big-picture');
 
-bigPicture.classList.remove('hidden');
+// bigPicture.classList.remove('hidden');
 
 var bigPictureSocial = bigPicture.querySelector('.big-picture__social');
 var bigPictureCommentsList = bigPictureSocial.querySelector('.social__comments');
@@ -194,3 +194,31 @@ hideVisually(commentsLoader);
 hideVisually(commentsCount);
 
 renderBigPicture(feed[0]);
+
+// Задание 8
+
+var uploadFile = document.querySelector('#upload-file');
+var photoEditForm = document.querySelector('.img-upload__overlay');
+var photoEditClose = photoEditForm.querySelector('.img-upload__cancel');
+
+var onUploadButtonClick = function () {
+  openPhotoEdit();
+};
+
+var onPhotoEditCloseClick = function () {
+  closePhotoEdit();
+};
+
+var openPhotoEdit = function () {
+  photoEditForm.classList.remove('hidden');
+  uploadFile.removeEventListener('change', onUploadButtonClick);
+};
+
+var closePhotoEdit = function () {
+  photoEditForm.classList.add('hidden');
+  uploadFile.value = '';
+  uploadFile.addEventListener('change', onUploadButtonClick);
+};
+
+uploadFile.addEventListener('change', onUploadButtonClick);
+photoEditClose.addEventListener('click', onPhotoEditCloseClick);
