@@ -31,6 +31,31 @@ var MIN_LIKES = 15;
 var MAX_LIKES = 200;
 var IMAGES_COUNT = 25;
 
+var EFFECTS = {
+  chrome: {
+    min: 0,
+    max: 1
+  },
+  sepia: {
+    min: 0,
+    max: 1
+  },
+  marvin: {
+    min: 0,
+    max: 100
+  },
+  phobos: {
+    min: 0,
+    max: 3
+  },
+  heat: {
+    min: 1,
+    max: 3
+  }
+};
+
+var MAX_SATURATION_PERCENT = 100;
+
 // Перемешивает значения в массиве
 var shuffleArray = function (arr) {
   var i;
@@ -197,9 +222,46 @@ renderBigPicture(feed[0]);
 
 // Задание 8
 
-var uploadFile = document.querySelector('#upload-file');
 var photoEditForm = document.querySelector('.img-upload__overlay');
-var photoEditClose = photoEditForm.querySelector('.img-upload__cancel');
+var currentEffect = photoEditForm.querySelector('input[name=effect]:checked').value;
+
+var changeEffect = function () {
+  currentEffect = photoEditForm.querySelector('input[name=effect]:checked').value;
+};
+
+var findSaturationValue = function (effect, percent) {
+  return effect.min + (effect.max - effect.min) / MAX_SATURATION_PERCENT * percent;
+};
+
+var editableImage = photoEditForm.querySelector('.img-upload__preview img');
+
+var renderEffect = function (percent) {
+  if (currentEffect === 'chrome') {
+    editableImage.style = 'filter: grayscale(' + findSaturationValue(EFFECTS.chrome, percent) + ')';
+  } else if (currentEffect === 'sepia') {
+    editableImage.style = 'filter: sepia(' + findSaturationValue(EFFECTS.sepia, percent) + ')';
+  } else if (currentEffect === 'marvin') {
+    editableImage.style = 'filter: invert(' + findSaturationValue(EFFECTS.marvin, percent) + '%)';
+  } else if (currentEffect === 'phobos') {
+    editableImage.style = 'filter: blur(' + findSaturationValue(EFFECTS.phobos, percent) + 'px)';
+  } else if (currentEffect === 'heat') {
+    editableImage.style = 'filter: brightness(' + findSaturationValue(EFFECTS.heat, percent) + ')';
+  } else {
+    editableImage.style = '';
+  }
+};
+
+var onEffectClick = function () {
+  changeEffect();
+  toggleSlider();
+  renderEffect(MAX_SATURATION_PERCENT);
+};
+
+var saturationPercent = photoEditForm.querySelector('.effect-level__value').value;
+
+var onSliderPinMouseUp = function () {
+  renderEffect(saturationPercent);
+};
 
 var onUploadButtonClick = function () {
   openPhotoEdit();
@@ -209,16 +271,42 @@ var onPhotoEditCloseClick = function () {
   closePhotoEdit();
 };
 
+var slider = photoEditForm.querySelector('.img-upload__effect-level');
+
+var toggleSlider = function () {
+  if (currentEffect === 'none') {
+    slider.classList.add('hidden');
+  } else {
+    slider.classList.remove('hidden');
+  }
+};
+
+var uploadFile = document.querySelector('#upload-file');
+var effectsList = photoEditForm.querySelectorAll('.effects__item');
+var sliderPin = photoEditForm.querySelector('.effect-level__pin');
+
 var openPhotoEdit = function () {
   photoEditForm.classList.remove('hidden');
+  slider.classList.add('hidden');
   uploadFile.removeEventListener('change', onUploadButtonClick);
+  effectsList.forEach(function (element) {
+    element.addEventListener('click', onEffectClick);
+  });
+  sliderPin.addEventListener('mouseup', onSliderPinMouseUp);
 };
 
 var closePhotoEdit = function () {
   photoEditForm.classList.add('hidden');
   uploadFile.value = '';
   uploadFile.addEventListener('change', onUploadButtonClick);
+  effectsList.forEach(function (element) {
+    element.removeEventListener('click', onEffectClick);
+  });
+  sliderPin.removeEventListener('mouseup', onSliderPinMouseUp);
 };
+
+var photoEditClose = photoEditForm.querySelector('.img-upload__cancel');
 
 uploadFile.addEventListener('change', onUploadButtonClick);
 photoEditClose.addEventListener('click', onPhotoEditCloseClick);
+
