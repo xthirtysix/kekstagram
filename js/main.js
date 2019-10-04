@@ -56,6 +56,9 @@ var EFFECTS = {
 
 var MAX_SATURATION_PERCENT = 100;
 
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
+
 // Перемешивает значения в массиве
 var shuffleArray = function (arr) {
   var i;
@@ -220,8 +223,6 @@ hideVisually(commentsCount);
 
 renderBigPicture(feed[0]);
 
-// Задание 8
-
 var photoEditForm = document.querySelector('.img-upload__overlay');
 var currentEffect = photoEditForm.querySelector('input[name=effect]:checked').value;
 
@@ -271,6 +272,14 @@ var onPhotoEditCloseClick = function () {
   closePhotoEdit();
 };
 
+var hashtagsInput = document.querySelector('.text__hashtags');
+
+var onPhotoEditFormEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE && hashtagsInput !== document.activeElement) {
+    closePhotoEdit();
+  }
+};
+
 var slider = photoEditForm.querySelector('.img-upload__effect-level');
 
 var toggleSlider = function () {
@@ -278,6 +287,29 @@ var toggleSlider = function () {
     slider.classList.add('hidden');
   } else {
     slider.classList.remove('hidden');
+  }
+};
+
+
+var onHashtagsInput = function (evt) {
+  var target = evt.target.value.split(' ');
+
+  for (var i = 0; i < target.length; i++) {
+    if (target.length > 5) {
+      hashtagsInput.setCustomValidity('Не допускается ввод более 5 хэштэговэ');
+    } else if (target[i][0] !== '#') {
+      hashtagsInput.setCustomValidity('Хэштэг должен начинаться с символа #');
+    } else if (target[i].length < 2 || target[i].length > 20) {
+      hashtagsInput.setCustomValidity('Допустимая длина хэштэга - от 2 до 20 символов, включая решётку');
+    } else {
+      hashtagsInput.setCustomValidity('');
+    }
+
+    for (var j = 0; j < target.length; j++) {
+      if (j !== i && target[i].toLowerCase() === target[j].toLowerCase()) {
+        hashtagsInput.setCustomValidity('Хэштэги не чувствительны к регистру. Убедитесь, что они не дублируются');
+      }
+    }
   }
 };
 
@@ -289,24 +321,28 @@ var openPhotoEdit = function () {
   photoEditForm.classList.remove('hidden');
   slider.classList.add('hidden');
   uploadFile.removeEventListener('change', onUploadButtonClick);
+  photoEditClose.addEventListener('click', onPhotoEditCloseClick);
+  document.addEventListener('keydown', onPhotoEditFormEscPress);
   effectsList.forEach(function (element) {
     element.addEventListener('click', onEffectClick);
   });
   sliderPin.addEventListener('mouseup', onSliderPinMouseUp);
+  hashtagsInput.addEventListener('input', onHashtagsInput);
 };
 
 var closePhotoEdit = function () {
   photoEditForm.classList.add('hidden');
   uploadFile.value = '';
   uploadFile.addEventListener('change', onUploadButtonClick);
+  photoEditClose.removeEventListener('click', onPhotoEditCloseClick);
+  document.removeEventListener('keydown', onPhotoEditFormEscPress);
   effectsList.forEach(function (element) {
     element.removeEventListener('click', onEffectClick);
   });
   sliderPin.removeEventListener('mouseup', onSliderPinMouseUp);
+  hashtagsInput.removeEventListener('input', onHashtagsInput);
 };
 
 var photoEditClose = photoEditForm.querySelector('.img-upload__cancel');
 
 uploadFile.addEventListener('change', onUploadButtonClick);
-photoEditClose.addEventListener('click', onPhotoEditCloseClick);
-
