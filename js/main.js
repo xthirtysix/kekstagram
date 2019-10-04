@@ -57,7 +57,6 @@ var EFFECTS = {
 var MAX_SATURATION_PERCENT = 100;
 
 var ESC_KEYCODE = 27;
-var ENTER_KEYCODE = 13;
 
 // Перемешивает значения в массиве
 var shuffleArray = function (arr) {
