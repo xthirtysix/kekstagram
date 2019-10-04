@@ -295,7 +295,7 @@ var onHashtagsInput = function (evt) {
 
   for (var i = 0; i < target.length; i++) {
     if (target.length > 5) {
-      hashtagsInput.setCustomValidity('Не допускается ввод более 5 хэштэговэ');
+      hashtagsInput.setCustomValidity('Не допускается ввод более 5 хэштэгов');
     } else if (target[i][0] !== '#') {
       hashtagsInput.setCustomValidity('Хэштэг должен начинаться с символа #');
     } else if (target[i].length < 2 || target[i].length > 20) {
