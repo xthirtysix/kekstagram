@@ -293,6 +293,10 @@ var toggleSlider = function () {
 var onHashtagsInput = function (evt) {
   var target = evt.target.value.split(' ');
 
+  if (target[target.length - 1] === '') {
+    target.pop();
+  }
+
   for (var i = 0; i < target.length; i++) {
     if (target.length > 5) {
       hashtagsInput.setCustomValidity('Не допускается ввод более 5 хэштэгов');
