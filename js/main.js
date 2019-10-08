@@ -322,10 +322,6 @@ var checkValidity = function () {
 
   var hashtags = hashtagsInput.value.trim().split(' ');
 
-  var hashtags = hashtagsInput.value.split(' ').filter(function (element) {
-    return element !== '';
-  });
-
   if (hashtags.length > MAX_HASHTAG_COUNT) {
     errorMessage = 'Макимальное количество хэштэгов - ' + MAX_HASHTAG_COUNT;
   }
