@@ -30,6 +30,11 @@ var MAX_COMMENTS = 5;
 var MIN_LIKES = 15;
 var MAX_LIKES = 200;
 var IMAGES_COUNT = 25;
+var MAX_SATURATION_PERCENT = 100;
+var ESC_KEYCODE = 27;
+var MIN_HASTAG_LENGTH = 2;
+var MAX_HASHTAG_LENGTH = 20;
+var MAX_HASHTAG_COUNT = 5;
 
 var EFFECTS = {
   chrome: {
@@ -53,10 +58,6 @@ var EFFECTS = {
     max: 3
   }
 };
-
-var MAX_SATURATION_PERCENT = 100;
-
-var ESC_KEYCODE = 27;
 
 // Перемешивает значения в массиве
 var shuffleArray = function (arr) {
@@ -236,31 +237,42 @@ var findSaturationValue = function (effect, percent) {
 var editableImage = photoEditForm.querySelector('.img-upload__preview img');
 
 var renderEffect = function (percent) {
-  if (currentEffect === 'chrome') {
-    editableImage.style = 'filter: grayscale(' + findSaturationValue(EFFECTS.chrome, percent) + ')';
-  } else if (currentEffect === 'sepia') {
-    editableImage.style = 'filter: sepia(' + findSaturationValue(EFFECTS.sepia, percent) + ')';
-  } else if (currentEffect === 'marvin') {
-    editableImage.style = 'filter: invert(' + findSaturationValue(EFFECTS.marvin, percent) + '%)';
-  } else if (currentEffect === 'phobos') {
-    editableImage.style = 'filter: blur(' + findSaturationValue(EFFECTS.phobos, percent) + 'px)';
-  } else if (currentEffect === 'heat') {
-    editableImage.style = 'filter: brightness(' + findSaturationValue(EFFECTS.heat, percent) + ')';
-  } else {
-    editableImage.style = '';
+  switch (currentEffect) {
+    case 'chrome':
+      editableImage.style = 'filter: grayscale(' + findSaturationValue(EFFECTS.chrome, percent) + ')';
+      break;
+    case 'sepia':
+      editableImage.style = 'filter: sepia(' + findSaturationValue(EFFECTS.sepia, percent) + ')';
+      break;
+    case 'marvin':
+      editableImage.style = 'filter: invert(' + findSaturationValue(EFFECTS.marvin, percent) + '%)';
+      break;
+    case 'phobos':
+      editableImage.style = 'filter: blur(' + findSaturationValue(EFFECTS.phobos, percent) + 'px)';
+      break;
+    case 'heat':
+      editableImage.style = 'filter: brightness(' + findSaturationValue(EFFECTS.heat, percent) + ')';
+      break;
+    default:
+      editableImage.style = '';
+      break;
   }
 };
 
-var onEffectClick = function () {
-  changeEffect();
-  toggleSlider();
-  renderEffect(MAX_SATURATION_PERCENT);
+var onEffectClick = function (evt) {
+  if (evt.target.name === 'effect') {
+    changeEffect();
+    toggleSlider();
+    renderEffect(MAX_SATURATION_PERCENT);
+  }
 };
 
-var saturationPercent = photoEditForm.querySelector('.effect-level__value').value;
+var getSaturationPercent = function () {
+  return photoEditForm.querySelector('.effect-level__value').value;
+};
 
 var onSliderPinMouseUp = function () {
-  renderEffect(saturationPercent);
+  renderEffect(getSaturationPercent);
 };
 
 var onUploadButtonClick = function () {
@@ -289,35 +301,43 @@ var toggleSlider = function () {
   }
 };
 
+var onHashtagsInput = function () {
+  var hashtags = document.querySelector('.text__hashtags').value.split(' ').filter(function (element) {
+    return element !== '';
+  });
 
-var onHashtagsInput = function (evt) {
-  var target = evt.target.value.split(' ');
+  var hasDuplicates = function (array) {
+    var duplicates = [];
 
-  if (target[target.length - 1] === '') {
-    target.pop();
-  }
+    for (var i = 0; i < array.length; ++i) {
+      var value = array[i].toLowerCase();
 
-  for (var i = 0; i < target.length; i++) {
-    if (target.length > 5) {
-      hashtagsInput.setCustomValidity('Не допускается ввод более 5 хэштэгов');
-    } else if (target[i][0] !== '#') {
-      hashtagsInput.setCustomValidity('Хэштэг должен начинаться с символа #');
-    } else if (target[i].length < 2 || target[i].length > 20) {
-      hashtagsInput.setCustomValidity('Допустимая длина хэштэга - от 2 до 20 символов, включая решётку');
-    } else {
-      hashtagsInput.setCustomValidity('');
+      if (duplicates.indexOf(value) !== -1) {
+        return true;
+      }
+
+      duplicates.push(value);
     }
 
-    for (var j = 0; j < target.length; j++) {
-      if (j !== i && target[i].toLowerCase() === target[j].toLowerCase()) {
-        hashtagsInput.setCustomValidity('Хэштэги не чувствительны к регистру. Убедитесь, что они не дублируются');
-      }
+    return false;
+  };
+
+  for (var i = 0; i < hashtags.length; i++) {
+    if (hashtags.length > MAX_HASHTAG_COUNT) {
+      hashtagsInput.setCustomValidity('Не допускается ввод более ' + MAX_HASHTAG_COUNT + ' хэштэгов');
+    } else if (hashtags[i][0] !== '#') {
+      hashtagsInput.setCustomValidity('Хэштэг должен начинаться с #');
+    } else if (hashtags[i].length < MIN_HASTAG_LENGTH || hashtags[i].length > MAX_HASHTAG_LENGTH) {
+      hashtagsInput.setCustomValidity('Допустимая длина хэштэга - от ' + MIN_HASTAG_LENGTH + ' до ' + MAX_HASHTAG_LENGTH + ' символов, включая #');
+    } else if (hasDuplicates(hashtags)) {
+      hashtagsInput.setCustomValidity('Теги дублируются');
+    } else {
+      hashtagsInput.setCustomValidity('');
     }
   }
 };
 
 var uploadFile = document.querySelector('#upload-file');
-var effectsList = photoEditForm.querySelectorAll('.effects__item');
 var sliderPin = photoEditForm.querySelector('.effect-level__pin');
 
 var openPhotoEdit = function () {
@@ -326,9 +346,7 @@ var openPhotoEdit = function () {
   uploadFile.removeEventListener('change', onUploadButtonClick);
   photoEditClose.addEventListener('click', onPhotoEditCloseClick);
   document.addEventListener('keydown', onPhotoEditFormEscPress);
-  effectsList.forEach(function (element) {
-    element.addEventListener('click', onEffectClick);
-  });
+  document.addEventListener('click', onEffectClick);
   sliderPin.addEventListener('mouseup', onSliderPinMouseUp);
   hashtagsInput.addEventListener('input', onHashtagsInput);
 };
@@ -339,9 +357,7 @@ var closePhotoEdit = function () {
   uploadFile.addEventListener('change', onUploadButtonClick);
   photoEditClose.removeEventListener('click', onPhotoEditCloseClick);
   document.removeEventListener('keydown', onPhotoEditFormEscPress);
-  effectsList.forEach(function (element) {
-    element.removeEventListener('click', onEffectClick);
-  });
+  document.removeEventListener('click', onEffectClick);
   sliderPin.removeEventListener('mouseup', onSliderPinMouseUp);
   hashtagsInput.removeEventListener('input', onHashtagsInput);
 };
