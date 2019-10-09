@@ -224,7 +224,8 @@ hideVisually(commentsCount);
 renderBigPicture(feed[0]);
 
 var photoEditForm = document.querySelector('.img-upload__overlay');
-var currentEffect = photoEditForm.querySelector('input[name=effect]:checked').value;
+var effectsList = photoEditForm.querySelector('.effects__list');
+var currentEffect = effectsList.querySelector('input[name=effect]:checked').value;
 
 var changeEffect = function () {
   currentEffect = photoEditForm.querySelector('input[name=effect]:checked').value;
@@ -324,22 +325,23 @@ var checkValidity = function () {
     return element !== '';
   });
 
+  var validateEachHashtag = function (array) {
+    array.forEach(function (element) {
+      if (element[0] !== '#') {
+        errorMessage = 'Хэштэг должен начинаться с "#"';
+      } else if (element.length < MIN_HASTAG_LENGTH || element.length > MAX_HASHTAG_LENGTH) {
+        errorMessage = 'Допустимая длина хэштэга - от ' + MIN_HASTAG_LENGTH + ' до ' + MAX_HASHTAG_LENGTH + ' символов, включая "#"';
+      }
+    });
+  };
+
   if (hashtags.length > MAX_HASHTAG_COUNT) {
     errorMessage = 'Макимальное количество хэштэгов - ' + MAX_HASHTAG_COUNT;
-  }
-
-  if (hasDuplicates(hashtags)) {
+  } else if (hasDuplicates(hashtags)) {
     errorMessage = 'Хэштэги не чувствительны к регистру, и не должны повторяться.';
+  } else {
+    validateEachHashtag(hashtags);
   }
-
-  hashtags.forEach(function (element) {
-    if (element[0] !== '#') {
-      errorMessage = 'Хэштэг должен начинаться с "#"';
-    }
-    if (element.length < MIN_HASTAG_LENGTH || element.length > MAX_HASHTAG_LENGTH) {
-      errorMessage = 'Допустимая длина хэштэга - от ' + MIN_HASTAG_LENGTH + ' до ' + MAX_HASHTAG_LENGTH + ' символов, включая "#"';
-    }
-  });
 
   hashtagsInput.setCustomValidity(errorMessage);
 };
@@ -350,7 +352,6 @@ var onHashtagsInput = function () {
 
 var uploadFile = document.querySelector('#upload-file');
 var sliderPin = photoEditForm.querySelector('.effect-level__pin');
-var effectsList = photoEditForm.querySelector('.effects__list');
 var photoEditClose = photoEditForm.querySelector('.img-upload__cancel');
 
 uploadFile.addEventListener('change', onUploadButtonClick);
@@ -366,9 +367,12 @@ var openPhotoEdit = function () {
   hashtagsInput.addEventListener('input', onHashtagsInput);
 };
 
+var defaultEffect = effectsList.querySelector('#effect-none');
+
 var closePhotoEdit = function () {
   photoEditForm.classList.add('hidden');
   uploadFile.value = '';
+  defaultEffect.click();
   uploadFile.addEventListener('change', onUploadButtonClick);
   photoEditClose.removeEventListener('click', onPhotoEditCloseClick);
   document.removeEventListener('keydown', onPhotoEditFormEscPress);
