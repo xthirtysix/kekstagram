@@ -272,6 +272,13 @@ var getSaturationPercent = function () {
   return photoEditForm.querySelector('.effect-level__value').value;
 };
 
+var defaultEffect = effectsList.querySelector('#effect-none');
+
+var resetEffect = function () {
+  defaultEffect.checked = true;
+  renderEffect();
+};
+
 var onSliderPinMouseUp = function () {
   renderEffect(getSaturationPercent());
 };
@@ -282,6 +289,7 @@ var onUploadButtonClick = function () {
 
 var onPhotoEditCloseClick = function () {
   closePhotoEdit();
+  resetEffect();
 };
 
 var hashtagsInput = document.querySelector('.text__hashtags');
@@ -289,6 +297,7 @@ var hashtagsInput = document.querySelector('.text__hashtags');
 var onPhotoEditFormEscPress = function (evt) {
   if (evt.keyCode === ESC_KEYCODE && hashtagsInput !== document.activeElement) {
     closePhotoEdit();
+    resetEffect();
   }
 };
 
@@ -325,14 +334,16 @@ var checkValidity = function () {
     return element !== '';
   });
 
-  var validateEachHashtag = function (array) {
-    array.forEach(function (element) {
-      if (element[0] !== '#') {
+  var validateHashtag = function (array) {
+    for (var i = 0; i < array.length; i++) {
+      if (array[i][0] !== '#') {
         errorMessage = 'Хэштэг должен начинаться с "#"';
-      } else if (element.length < MIN_HASTAG_LENGTH || element.length > MAX_HASHTAG_LENGTH) {
+        break;
+      } else if (array[i].length < MIN_HASTAG_LENGTH || array[i].length > MAX_HASHTAG_LENGTH) {
         errorMessage = 'Допустимая длина хэштэга - от ' + MIN_HASTAG_LENGTH + ' до ' + MAX_HASHTAG_LENGTH + ' символов, включая "#"';
+        break;
       }
-    });
+    }
   };
 
   if (hashtags.length > MAX_HASHTAG_COUNT) {
@@ -340,7 +351,7 @@ var checkValidity = function () {
   } else if (hasDuplicates(hashtags)) {
     errorMessage = 'Хэштэги не чувствительны к регистру, и не должны повторяться.';
   } else {
-    validateEachHashtag(hashtags);
+    validateHashtag(hashtags);
   }
 
   hashtagsInput.setCustomValidity(errorMessage);
@@ -367,12 +378,9 @@ var openPhotoEdit = function () {
   hashtagsInput.addEventListener('input', onHashtagsInput);
 };
 
-var defaultEffect = effectsList.querySelector('#effect-none');
-
 var closePhotoEdit = function () {
   photoEditForm.classList.add('hidden');
   uploadFile.value = '';
-  defaultEffect.click();
   uploadFile.addEventListener('change', onUploadButtonClick);
   photoEditClose.removeEventListener('click', onPhotoEditCloseClick);
   document.removeEventListener('keydown', onPhotoEditFormEscPress);
