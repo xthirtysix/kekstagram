@@ -276,7 +276,7 @@ var defaultEffect = effectsList.querySelector('#effect-none');
 
 var resetEffect = function () {
   defaultEffect.checked = true;
-  renderEffect();
+  editableImage.style = '';
 };
 
 var onSliderPinMouseUp = function () {
