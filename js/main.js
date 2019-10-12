@@ -276,7 +276,9 @@ var defaultEffect = effectsList.querySelector('#effect-none');
 
 var resetEffect = function () {
   defaultEffect.checked = true;
-  editableImage.style = '';
+  changeEffect();
+  toggleSlider();
+  renderEffect();
 };
 
 var onSliderPinMouseUp = function () {
@@ -289,7 +291,6 @@ var onUploadButtonClick = function () {
 
 var onPhotoEditCloseClick = function () {
   closePhotoEdit();
-  resetEffect();
 };
 
 var hashtagsInput = document.querySelector('.text__hashtags');
@@ -297,7 +298,6 @@ var hashtagsInput = document.querySelector('.text__hashtags');
 var onPhotoEditFormEscPress = function (evt) {
   if (evt.keyCode === ESC_KEYCODE && hashtagsInput !== document.activeElement) {
     closePhotoEdit();
-    resetEffect();
   }
 };
 
@@ -334,7 +334,7 @@ var checkValidity = function () {
     return element !== '';
   });
 
-  var validateHashtag = function (array) {
+  var validateHashtagsInArray = function (array) {
     for (var i = 0; i < array.length; i++) {
       if (array[i][0] !== '#') {
         errorMessage = 'Хэштэг должен начинаться с "#"';
@@ -351,7 +351,7 @@ var checkValidity = function () {
   } else if (hasDuplicates(hashtags)) {
     errorMessage = 'Хэштэги не чувствительны к регистру, и не должны повторяться.';
   } else {
-    validateHashtag(hashtags);
+    validateHashtagsInArray(hashtags);
   }
 
   hashtagsInput.setCustomValidity(errorMessage);
@@ -369,7 +369,7 @@ uploadFile.addEventListener('change', onUploadButtonClick);
 
 var openPhotoEdit = function () {
   photoEditForm.classList.remove('hidden');
-  slider.classList.add('hidden');
+  resetEffect();
   uploadFile.removeEventListener('change', onUploadButtonClick);
   photoEditClose.addEventListener('click', onPhotoEditCloseClick);
   document.addEventListener('keydown', onPhotoEditFormEscPress);
