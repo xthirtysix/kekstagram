@@ -32,6 +32,7 @@ var MAX_LIKES = 200;
 var IMAGES_COUNT = 25;
 var MAX_SATURATION_PERCENT = 100;
 var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
 var MIN_HASTAG_LENGTH = 2;
 var MAX_HASHTAG_LENGTH = 20;
 var MAX_HASHTAG_COUNT = 5;
@@ -172,9 +173,6 @@ var feed = generateFeed(IMAGES_COUNT);
 renderFeed(feed);
 
 var bigPicture = document.querySelector('.big-picture');
-
-// bigPicture.classList.remove('hidden');
-
 var bigPictureSocial = bigPicture.querySelector('.big-picture__social');
 var bigPictureCommentsList = bigPictureSocial.querySelector('.social__comments');
 var bigPictureComment = bigPictureCommentsList.querySelector('.social__comment');
@@ -197,6 +195,7 @@ var bigPictureCommentsCount = bigPictureSocial.querySelector('.comments-count');
 var bigPictureDescription = bigPictureSocial.querySelector('.social__caption');
 
 var renderBigPicture = function (post) {
+  bigPicture.classList.remove('hidden');
   bigPicrureImage.src = post.url;
   bigPictureLikesCount.textContent = post.likes;
   bigPictureCommentsCount.textContent = post.comments.length;
@@ -221,7 +220,55 @@ var hideVisually = function (element) {
 hideVisually(commentsLoader);
 hideVisually(commentsCount);
 
-renderBigPicture(feed[0]);
+var bigPictureClose = bigPicture.querySelector('.big-picture__cancel');
+var pictures = document.querySelectorAll('.picture');
+
+var onPreviewClick = function (data) {
+  openBigPicture(data);
+};
+
+var openBigPicture = function (data) {
+  renderBigPicture(data);
+  bigPictureClose.addEventListener('click', onBigPictureCloseClick);
+  bigPictureClose.addEventListener('keydown', onBigPictureCloseEnterPress);
+  document.addEventListener('keydown', onBigPictureEscPress);
+};
+
+var onBigPictureCloseClick = function () {
+  closeBigPicture();
+};
+
+var onBigPictureCloseEnterPress = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    closeBigPicture();
+  }
+};
+
+var onBigPictureEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closeBigPicture();
+  }
+};
+
+var closeBigPicture = function () {
+  bigPicture.classList.add('hidden');
+};
+
+
+var addPictureHandler = function (picture, data) {
+  picture.addEventListener('click', function () {
+    onPreviewClick(data);
+  });
+  picture.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      onPreviewClick(picture, data);
+    }
+  });
+};
+
+for (var j = 0; j < pictures.length; j++) {
+  addPictureHandler(pictures[j], feed[j]);
+}
 
 var photoEditForm = document.querySelector('.img-upload__overlay');
 var effectsList = photoEditForm.querySelector('.effects__list');
