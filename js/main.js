@@ -224,7 +224,8 @@ hideVisually(commentsCount);
 renderBigPicture(feed[0]);
 
 var photoEditForm = document.querySelector('.img-upload__overlay');
-var currentEffect = photoEditForm.querySelector('input[name=effect]:checked').value;
+var effectsList = photoEditForm.querySelector('.effects__list');
+var currentEffect = effectsList.querySelector('input[name=effect]:checked').value;
 
 var changeEffect = function () {
   currentEffect = photoEditForm.querySelector('input[name=effect]:checked').value;
@@ -271,8 +272,17 @@ var getSaturationPercent = function () {
   return photoEditForm.querySelector('.effect-level__value').value;
 };
 
+var defaultEffect = effectsList.querySelector('#effect-none');
+
+var resetEffect = function () {
+  defaultEffect.checked = true;
+  changeEffect();
+  toggleSlider();
+  renderEffect();
+};
+
 var onSliderPinMouseUp = function () {
-  renderEffect(getSaturationPercent);
+  renderEffect(getSaturationPercent());
 };
 
 var onUploadButtonClick = function () {
@@ -301,52 +311,69 @@ var toggleSlider = function () {
   }
 };
 
-var onHashtagsInput = function () {
-  var hashtags = document.querySelector('.text__hashtags').value.split(' ').filter(function (element) {
+var hasDuplicates = function (array) {
+  var duplicates = [];
+
+  for (var i = 0; i < array.length; i++) {
+    var value = array[i].toLowerCase();
+
+    if (duplicates.indexOf(value) !== -1) {
+      return true;
+    }
+
+    duplicates.push(value);
+  }
+
+  return false;
+};
+
+var checkValidity = function () {
+  var errorMessage = '';
+
+  var hashtags = hashtagsInput.value.split(' ').filter(function (element) {
     return element !== '';
   });
 
-  var hasDuplicates = function (array) {
-    var duplicates = [];
-
-    for (var i = 0; i < array.length; ++i) {
-      var value = array[i].toLowerCase();
-
-      if (duplicates.indexOf(value) !== -1) {
-        return true;
+  var validateHashtagsInArray = function (array) {
+    for (var i = 0; i < array.length; i++) {
+      if (array[i][0] !== '#') {
+        errorMessage = 'Хэштэг должен начинаться с "#"';
+        break;
+      } else if (array[i].length < MIN_HASTAG_LENGTH || array[i].length > MAX_HASHTAG_LENGTH) {
+        errorMessage = 'Допустимая длина хэштэга - от ' + MIN_HASTAG_LENGTH + ' до ' + MAX_HASHTAG_LENGTH + ' символов, включая "#"';
+        break;
       }
-
-      duplicates.push(value);
     }
-
-    return false;
   };
 
-  for (var i = 0; i < hashtags.length; i++) {
-    if (hashtags.length > MAX_HASHTAG_COUNT) {
-      hashtagsInput.setCustomValidity('Не допускается ввод более ' + MAX_HASHTAG_COUNT + ' хэштэгов');
-    } else if (hashtags[i][0] !== '#') {
-      hashtagsInput.setCustomValidity('Хэштэг должен начинаться с #');
-    } else if (hashtags[i].length < MIN_HASTAG_LENGTH || hashtags[i].length > MAX_HASHTAG_LENGTH) {
-      hashtagsInput.setCustomValidity('Допустимая длина хэштэга - от ' + MIN_HASTAG_LENGTH + ' до ' + MAX_HASHTAG_LENGTH + ' символов, включая #');
-    } else if (hasDuplicates(hashtags)) {
-      hashtagsInput.setCustomValidity('Теги дублируются');
-    } else {
-      hashtagsInput.setCustomValidity('');
-    }
+  if (hashtags.length > MAX_HASHTAG_COUNT) {
+    errorMessage = 'Макимальное количество хэштэгов - ' + MAX_HASHTAG_COUNT;
+  } else if (hasDuplicates(hashtags)) {
+    errorMessage = 'Хэштэги не чувствительны к регистру, и не должны повторяться.';
+  } else {
+    validateHashtagsInArray(hashtags);
   }
+
+  hashtagsInput.setCustomValidity(errorMessage);
+};
+
+var onHashtagsInput = function () {
+  checkValidity();
 };
 
 var uploadFile = document.querySelector('#upload-file');
 var sliderPin = photoEditForm.querySelector('.effect-level__pin');
+var photoEditClose = photoEditForm.querySelector('.img-upload__cancel');
+
+uploadFile.addEventListener('change', onUploadButtonClick);
 
 var openPhotoEdit = function () {
   photoEditForm.classList.remove('hidden');
-  slider.classList.add('hidden');
+  resetEffect();
   uploadFile.removeEventListener('change', onUploadButtonClick);
   photoEditClose.addEventListener('click', onPhotoEditCloseClick);
   document.addEventListener('keydown', onPhotoEditFormEscPress);
-  document.addEventListener('click', onEffectClick);
+  effectsList.addEventListener('click', onEffectClick);
   sliderPin.addEventListener('mouseup', onSliderPinMouseUp);
   hashtagsInput.addEventListener('input', onHashtagsInput);
 };
@@ -357,11 +384,7 @@ var closePhotoEdit = function () {
   uploadFile.addEventListener('change', onUploadButtonClick);
   photoEditClose.removeEventListener('click', onPhotoEditCloseClick);
   document.removeEventListener('keydown', onPhotoEditFormEscPress);
-  document.removeEventListener('click', onEffectClick);
+  effectsList.removeEventListener('click', onEffectClick);
   sliderPin.removeEventListener('mouseup', onSliderPinMouseUp);
   hashtagsInput.removeEventListener('input', onHashtagsInput);
 };
-
-var photoEditClose = photoEditForm.querySelector('.img-upload__cancel');
-
-uploadFile.addEventListener('change', onUploadButtonClick);
