@@ -217,6 +217,10 @@ var hideVisually = function (element) {
   element.classList.add('visually-hidden');
 };
 
+var cancelHideVisually = function (element) {
+  element.classList.remove('visually-hidden');
+};
+
 hideVisually(commentsLoader);
 hideVisually(commentsCount);
 
@@ -329,6 +333,8 @@ var defaultEffect = effectsList.querySelector('#effect-none');
 
 // Сбрасывает форму редактирования(загрузки) изображения на значения по умолчанию
 var resetUploadForm = function () {
+  hashtagsInput.value = '';
+  descriptionInput.value = '';
   defaultEffect.checked = true;
   changeEffect();
   toggleSlider();
@@ -463,17 +469,133 @@ var onDescriptionInput = function () {
   checkDescriptionValidity();
 };
 
+// Отображает сообщение после загрузки фото
+var displaySubmitMessage = function () {
+  if (hashtagsInput.validity.valid === true && descriptionInput.validity.valid === true) {
+    displaySuccessMessage();
+  } else {
+    displayErrorMessage();
+  }
+};
+
+// Обработчики и переменные успешной загрузки фотографии
+var main = document.querySelector('main');
+var successTemplate = document.querySelector('#success').content.querySelector('.success');
+
+var onSuccessMessageClick = function (evt) {
+  if (evt.target.className === 'success' || evt.target.className === 'success__button') {
+    main.querySelector('.success').remove();
+  }
+};
+
+var onSuccessMessageEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    main.querySelector('.success').remove();
+  }
+};
+
+var onSuccessButtonEnterPress = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    main.querySelector('.success').remove();
+  }
+};
+
+// Показ сообщения об успешной загрузки фото
+var displaySuccessMessage = function () {
+  var successMessage = successTemplate.cloneNode(true);
+  var successButton = successMessage.querySelector('.success__button');
+
+  closePhotoEdit();
+  successMessage.addEventListener('click', onSuccessMessageClick);
+  document.addEventListener('keydown', onSuccessMessageEscPress);
+  successButton.addEventListener('keydown', onSuccessButtonEnterPress);
+
+  return main.appendChild(successMessage);
+};
+
+// Обработчики, функции и переменные сообщения об ошибке после загрузки фото
+var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+
+var errorMessageClose = function () {
+  main.querySelector('.error').remove();
+};
+
+var onErrorMessageClick = function (evt) {
+  if (evt.target.className === 'error' || evt.target.className === 'error__button') {
+    errorMessageClose();
+    cancelHideVisually(photoEditForm);
+  }
+};
+
+var onErrorMessageEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    errorMessageClose();
+    cancelHideVisually(photoEditForm);
+  }
+};
+
+var onErrorRepeatButtonClick = function () {
+  errorMessageClose();
+  cancelHideVisually(photoEditForm);
+};
+
+var onErrorRepeatButtonEnterPress = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    errorMessageClose();
+    cancelHideVisually(photoEditForm);
+  }
+};
+
+var onErrorCancelButtonClick = function () {
+  errorMessageClose();
+  cancelHideVisually(photoEditForm);
+  closePhotoEdit();
+};
+
+var onErrorCancelButtonEnterPress = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    errorMessageClose();
+    cancelHideVisually(photoEditForm);
+    closePhotoEdit();
+  }
+};
+
+// Показ сообщения об ошибке загрузки фото
+var displayErrorMessage = function () {
+  var errorMessage = errorTemplate.cloneNode(true);
+  var errorButtons = errorMessage.querySelectorAll('.error__button');
+  var errorRepeatButton = errorButtons[0];
+  var errorCancelButton = errorButtons[1];
+
+  hideVisually(photoEditForm);
+
+  errorMessage.addEventListener('click', onErrorMessageClick);
+  errorMessage.addEventListener('keydown', onErrorMessageEscPress);
+  errorRepeatButton.addEventListener('click', onErrorRepeatButtonClick);
+  errorRepeatButton.addEventListener('keydown', onErrorRepeatButtonEnterPress);
+  errorCancelButton.addEventListener('click', onErrorCancelButtonClick);
+  errorCancelButton.addEventListener('keydown', onErrorCancelButtonEnterPress);
+
+  return main.appendChild(errorMessage);
+};
+
+var onUploadSubmitClick = function (evt) {
+  evt.preventDefault();
+  displaySubmitMessage();
+};
+
 var uploadFile = document.querySelector('#upload-file');
 var sliderPin = photoEditForm.querySelector('.effect-level__pin');
 var photoEditClose = photoEditForm.querySelector('.img-upload__cancel');
+var uploadSubmit = photoEditForm.querySelector('.img-upload__submit');
 
 uploadFile.addEventListener('change', onUploadButtonClick);
 
 // Открыть/закрыть форму редактирования(загрузки) изображения.
 var openPhotoEdit = function () {
+  resetUploadForm();
   photoEditForm.classList.remove('hidden');
   photoEditForm.addEventListener('input', onFormFieldsInput);
-  resetUploadForm();
   uploadFile.removeEventListener('change', onUploadButtonClick);
   photoEditClose.addEventListener('click', onPhotoEditCloseClick);
   document.addEventListener('keydown', onPhotoEditFormEscPress);
@@ -481,6 +603,7 @@ var openPhotoEdit = function () {
   sliderPin.addEventListener('mouseup', onSliderPinMouseUp);
   hashtagsInput.addEventListener('input', onHashtagsInput);
   descriptionInput.addEventListener('input', onDescriptionInput);
+  uploadSubmit.addEventListener('click', onUploadSubmitClick);
 };
 
 var closePhotoEdit = function () {
@@ -494,4 +617,5 @@ var closePhotoEdit = function () {
   sliderPin.removeEventListener('mouseup', onSliderPinMouseUp);
   hashtagsInput.removeEventListener('input', onHashtagsInput);
   descriptionInput.removeEventListener('input', onDescriptionInput);
+  uploadSubmit.removeEventListener('click', onUploadSubmitClick);
 };
