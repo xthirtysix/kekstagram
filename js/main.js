@@ -25,6 +25,7 @@ var MESSAGES = [
 
 var AVATARS_COUNT = 6;
 var MAX_MESSAGE_LENGTH = 2;
+var MAX_DESCRIPTION_LENGTH = 140;
 var MIN_COMMENTS = 1;
 var MAX_COMMENTS = 5;
 var MIN_LIKES = 15;
@@ -75,6 +76,7 @@ var shuffleArray = function (arr) {
   return arr;
 };
 
+// Возвращает сгенерированное пользовательское сообщение
 var generateMessage = function (messageTemplates, length) {
   var shuffledMessages = shuffleArray(messageTemplates);
   var message = '';
@@ -89,14 +91,17 @@ var generateMessage = function (messageTemplates, length) {
   return message;
 };
 
+// Случайное число в диапазоне
 var getRandomNum = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
+// Возвращает URL изображения
 var getPostImageUrl = function (fileName) {
   return 'photos/' + fileName + '.jpg';
 };
 
+// Возвращает объект пользовательского комментария
 var generateComment = function () {
   return {
     avatar: 'img/avatar-' + getRandomNum(1, AVATARS_COUNT) + '.svg',
@@ -105,6 +110,7 @@ var generateComment = function () {
   };
 };
 
+// Возвращает массив пользовательских комментариев
 var generateCommentsFeed = function () {
   var comments = [];
   var commentsCount = getRandomNum(MIN_COMMENTS, MAX_COMMENTS);
@@ -116,36 +122,26 @@ var generateCommentsFeed = function () {
   return comments;
 };
 
+// Возвращает массив сгенерированных пользовательских постов
 var generateFeed = function (length) {
   var feed = [];
 
   for (var i = 0; i < length; i++) {
     var post = {};
 
-    // Добавляет изображение
     post.url = getPostImageUrl(i + 1);
-
-    // Добавляет описание
     post.description = 'Сфотографировано на калькулятор';
-
-    // Добавляет лайки
     post.likes = getRandomNum(MIN_LIKES, MAX_LIKES);
-
-    // Добавляет комментарии
     post.comments = generateCommentsFeed();
-
-    // Добавляет пост в ленту
     feed.push(post);
   }
 
   return feed;
 };
 
-var postTemplate = document
-  .querySelector('#picture')
-  .content.querySelector('a');
+var postTemplate = document.querySelector('#picture').content.querySelector('a');
 
-
+// Отображает пользовательский пост
 var renderPost = function (obj) {
   var post = postTemplate.cloneNode(true);
 
@@ -158,6 +154,7 @@ var renderPost = function (obj) {
 
 var pictureFeed = document.querySelector('.pictures');
 
+// Отображает ленту пользовательских постов
 var renderFeed = function (feed) {
   var fragment = document.createDocumentFragment();
 
@@ -177,6 +174,7 @@ var bigPictureSocial = bigPicture.querySelector('.big-picture__social');
 var bigPictureCommentsList = bigPictureSocial.querySelector('.social__comments');
 var bigPictureComment = bigPictureCommentsList.querySelector('.social__comment');
 
+// Отображает пользовательский комментарий
 var renderComment = function (comment) {
   var message = bigPictureComment.cloneNode(true);
   var messagePicture = message.querySelector('.social__picture');
@@ -194,6 +192,7 @@ var bigPictureLikesCount = bigPictureSocial.querySelector('.likes-count');
 var bigPictureCommentsCount = bigPictureSocial.querySelector('.comments-count');
 var bigPictureDescription = bigPictureSocial.querySelector('.social__caption');
 
+// Отображает страницу пользовательского поста
 var renderBigPicture = function (post) {
   bigPicture.classList.remove('hidden');
   bigPicrureImage.src = post.url;
@@ -213,6 +212,7 @@ var renderBigPicture = function (post) {
 var commentsCount = bigPicture.querySelector('.social__comment-count');
 var commentsLoader = bigPicture.querySelector('.comments-loader');
 
+// Скрывает элемент
 var hideVisually = function (element) {
   element.classList.add('visually-hidden');
 };
@@ -227,6 +227,7 @@ var onPreviewClick = function (data) {
   openBigPicture(data);
 };
 
+// Открывает пользовательский пост
 var openBigPicture = function (data) {
   renderBigPicture(data);
   bigPictureClose.addEventListener('click', onBigPictureCloseClick);
@@ -250,18 +251,19 @@ var onBigPictureEscPress = function (evt) {
   }
 };
 
+// Закрывает пользовательский пост
 var closeBigPicture = function () {
   bigPicture.classList.add('hidden');
 };
 
-
+// Добавляет обработчик превью поста
 var addPictureHandler = function (picture, data) {
   picture.addEventListener('click', function () {
     onPreviewClick(data);
   });
   picture.addEventListener('keydown', function (evt) {
     if (evt.keyCode === ENTER_KEYCODE) {
-      onPreviewClick(picture, data);
+      onPreviewClick(data);
     }
   });
 };
@@ -274,16 +276,19 @@ var photoEditForm = document.querySelector('.img-upload__overlay');
 var effectsList = photoEditForm.querySelector('.effects__list');
 var currentEffect = effectsList.querySelector('input[name=effect]:checked').value;
 
+// Меняет значение текущего эффекта
 var changeEffect = function () {
   currentEffect = photoEditForm.querySelector('input[name=effect]:checked').value;
 };
 
+// Возваращает значение насыщенности эффекта
 var findSaturationValue = function (effect, percent) {
   return effect.min + (effect.max - effect.min) / MAX_SATURATION_PERCENT * percent;
 };
 
 var editableImage = photoEditForm.querySelector('.img-upload__preview img');
 
+// Отображает эффект фильтра
 var renderEffect = function (percent) {
   switch (currentEffect) {
     case 'chrome':
@@ -315,17 +320,21 @@ var onEffectClick = function (evt) {
   }
 };
 
+// Возваращает процент значения насыщенности эффекта
 var getSaturationPercent = function () {
   return photoEditForm.querySelector('.effect-level__value').value;
 };
 
 var defaultEffect = effectsList.querySelector('#effect-none');
 
-var resetEffect = function () {
+// Сбрасывает форму редактирования(загрузки) изображения на значения по умолчанию
+var resetUploadForm = function () {
   defaultEffect.checked = true;
   changeEffect();
   toggleSlider();
   renderEffect();
+  resetInputBorder(hashtagsInput);
+  resetInputBorder(descriptionInput);
 };
 
 var onSliderPinMouseUp = function () {
@@ -350,6 +359,7 @@ var onPhotoEditFormEscPress = function (evt) {
 
 var slider = photoEditForm.querySelector('.img-upload__effect-level');
 
+// Скрывает/показывает ползунок уровня эффекта
 var toggleSlider = function () {
   if (currentEffect === 'none') {
     slider.classList.add('hidden');
@@ -358,6 +368,7 @@ var toggleSlider = function () {
   }
 };
 
+// Проверяет массив на наличие дублирующихся значений (без учёта регистра)
 var hasDuplicates = function (array) {
   var duplicates = [];
 
@@ -374,7 +385,34 @@ var hasDuplicates = function (array) {
   return false;
 };
 
-var checkValidity = function () {
+// Добавляет элементу красную рамку толщиной 2px
+var colorInputBorder = function (input) {
+  input.style.borderColor = 'red';
+  input.style.borderWidth = '2px';
+};
+
+// Убирает рамку элемента
+var resetInputBorder = function (input) {
+  input.style.borderColor = '';
+  input.style.borderWidth = '';
+};
+
+// Подсветка невалидных полей ввода
+var colorInvalidInputs = function (evt) {
+  var target = evt.target;
+  if ((target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') && target.validity.valid === false) {
+    colorInputBorder(target);
+  } else {
+    resetInputBorder(target);
+  }
+};
+
+var onFormFieldsInput = function () {
+  colorInvalidInputs(event);
+};
+
+// Валидация хэштэгов загружаемой фотографии
+var checkHashtagsValidity = function () {
   var errorMessage = '';
 
   var hashtags = hashtagsInput.value.split(' ').filter(function (element) {
@@ -405,7 +443,24 @@ var checkValidity = function () {
 };
 
 var onHashtagsInput = function () {
-  checkValidity();
+  checkHashtagsValidity();
+};
+
+// Валидация описания загружаемой фотографии
+var descriptionInput = photoEditForm.querySelector('.text__description');
+
+var checkDescriptionValidity = function () {
+  var errorMessage = '';
+
+  if (descriptionInput.value.length > MAX_DESCRIPTION_LENGTH) {
+    errorMessage = 'Длина описания не должна превышать ' + MAX_DESCRIPTION_LENGTH + ' символов';
+  }
+
+  descriptionInput.setCustomValidity(errorMessage);
+};
+
+var onDescriptionInput = function () {
+  checkDescriptionValidity();
 };
 
 var uploadFile = document.querySelector('#upload-file');
@@ -414,19 +469,23 @@ var photoEditClose = photoEditForm.querySelector('.img-upload__cancel');
 
 uploadFile.addEventListener('change', onUploadButtonClick);
 
+// Открыть/закрыть форму редактирования(загрузки) изображения.
 var openPhotoEdit = function () {
   photoEditForm.classList.remove('hidden');
-  resetEffect();
+  photoEditForm.addEventListener('input', onFormFieldsInput);
+  resetUploadForm();
   uploadFile.removeEventListener('change', onUploadButtonClick);
   photoEditClose.addEventListener('click', onPhotoEditCloseClick);
   document.addEventListener('keydown', onPhotoEditFormEscPress);
   effectsList.addEventListener('click', onEffectClick);
   sliderPin.addEventListener('mouseup', onSliderPinMouseUp);
   hashtagsInput.addEventListener('input', onHashtagsInput);
+  descriptionInput.addEventListener('input', onDescriptionInput);
 };
 
 var closePhotoEdit = function () {
   photoEditForm.classList.add('hidden');
+  photoEditForm.removeEventListener('input', onFormFieldsInput);
   uploadFile.value = '';
   uploadFile.addEventListener('change', onUploadButtonClick);
   photoEditClose.removeEventListener('click', onPhotoEditCloseClick);
@@ -434,4 +493,5 @@ var closePhotoEdit = function () {
   effectsList.removeEventListener('click', onEffectClick);
   sliderPin.removeEventListener('mouseup', onSliderPinMouseUp);
   hashtagsInput.removeEventListener('input', onHashtagsInput);
+  descriptionInput.removeEventListener('input', onDescriptionInput);
 };
