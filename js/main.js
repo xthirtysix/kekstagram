@@ -149,6 +149,15 @@ var renderPost = function (obj) {
   post.querySelector('.picture__likes').textContent = obj.likes;
   post.querySelector('.picture__comments').textContent = obj.comments.length;
 
+  post.addEventListener('click', function () {
+    openBigPicture(obj);
+  });
+  post.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      openBigPicture(obj);
+    }
+  });
+
   return post;
 };
 
@@ -225,11 +234,6 @@ hideVisually(commentsLoader);
 hideVisually(commentsCount);
 
 var bigPictureClose = bigPicture.querySelector('.big-picture__cancel');
-var pictures = document.querySelectorAll('.picture');
-
-var onPreviewClick = function (data) {
-  openBigPicture(data);
-};
 
 // Открывает пользовательский пост
 var openBigPicture = function (data) {
@@ -259,22 +263,6 @@ var onBigPictureEscPress = function (evt) {
 var closeBigPicture = function () {
   bigPicture.classList.add('hidden');
 };
-
-// Добавляет обработчик превью поста
-var addPictureHandler = function (picture, data) {
-  picture.addEventListener('click', function () {
-    onPreviewClick(data);
-  });
-  picture.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === ENTER_KEYCODE) {
-      onPreviewClick(data);
-    }
-  });
-};
-
-for (var j = 0; j < pictures.length; j++) {
-  addPictureHandler(pictures[j], feed[j]);
-}
 
 var photoEditForm = document.querySelector('.img-upload__overlay');
 var effectsList = photoEditForm.querySelector('.effects__list');
