@@ -339,6 +339,8 @@ var resetUploadForm = function () {
   changeEffect();
   toggleSlider();
   renderEffect();
+  checkHashtagsValidity();
+  checkDescriptionValidity();
   resetInputBorder(hashtagsInput);
   resetInputBorder(descriptionInput);
 };
@@ -433,6 +435,8 @@ var checkHashtagsValidity = function () {
       } else if (array[i].length < MIN_HASTAG_LENGTH || array[i].length > MAX_HASHTAG_LENGTH) {
         errorMessage = 'Допустимая длина хэштэга - от ' + MIN_HASTAG_LENGTH + ' до ' + MAX_HASHTAG_LENGTH + ' символов, включая "#"';
         break;
+      } else {
+        errorMessage = '';
       }
     }
   };
@@ -478,32 +482,35 @@ var displaySubmitMessage = function () {
   }
 };
 
-// Обработчики и переменные успешной загрузки фотографии
+// Показ сообщения об успешной загрузки фото
 var main = document.querySelector('main');
 var successTemplate = document.querySelector('#success').content.querySelector('.success');
 
-var onSuccessMessageClick = function (evt) {
-  if (evt.target.className === 'success' || evt.target.className === 'success__button') {
-    main.querySelector('.success').remove();
-  }
-};
-
-var onSuccessMessageEscPress = function (evt) {
-  if (evt.keyCode === ESC_KEYCODE) {
-    main.querySelector('.success').remove();
-  }
-};
-
-var onSuccessButtonEnterPress = function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    main.querySelector('.success').remove();
-  }
-};
-
-// Показ сообщения об успешной загрузки фото
 var displaySuccessMessage = function () {
   var successMessage = successTemplate.cloneNode(true);
   var successButton = successMessage.querySelector('.success__button');
+
+  var successMessageClose = function () {
+    successMessage.remove();
+  };
+
+  var onSuccessMessageClick = function (evt) {
+    if (evt.target.className === 'success' || evt.target.className === 'success__button') {
+      successMessageClose();
+    }
+  };
+
+  var onSuccessMessageEscPress = function (evt) {
+    if (evt.keyCode === ESC_KEYCODE) {
+      successMessageClose();
+    }
+  };
+
+  var onSuccessButtonEnterPress = function (evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      successMessageClose();
+    }
+  };
 
   closePhotoEdit();
   successMessage.addEventListener('click', onSuccessMessageClick);
@@ -513,59 +520,58 @@ var displaySuccessMessage = function () {
   return main.appendChild(successMessage);
 };
 
-// Обработчики, функции и переменные сообщения об ошибке после загрузки фото
+// Показ сообщения об ошибке загрузки фото
 var errorTemplate = document.querySelector('#error').content.querySelector('.error');
 
-var errorMessageClose = function () {
-  main.querySelector('.error').remove();
-};
-
-var onErrorMessageClick = function (evt) {
-  if (evt.target.className === 'error' || evt.target.className === 'error__button') {
-    errorMessageClose();
-    cancelHideVisually(photoEditForm);
-  }
-};
-
-var onErrorMessageEscPress = function (evt) {
-  if (evt.keyCode === ESC_KEYCODE) {
-    errorMessageClose();
-    cancelHideVisually(photoEditForm);
-  }
-};
-
-var onErrorRepeatButtonClick = function () {
-  errorMessageClose();
-  cancelHideVisually(photoEditForm);
-};
-
-var onErrorRepeatButtonEnterPress = function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    errorMessageClose();
-    cancelHideVisually(photoEditForm);
-  }
-};
-
-var onErrorCancelButtonClick = function () {
-  errorMessageClose();
-  cancelHideVisually(photoEditForm);
-  closePhotoEdit();
-};
-
-var onErrorCancelButtonEnterPress = function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    errorMessageClose();
-    cancelHideVisually(photoEditForm);
-    closePhotoEdit();
-  }
-};
-
-// Показ сообщения об ошибке загрузки фото
 var displayErrorMessage = function () {
   var errorMessage = errorTemplate.cloneNode(true);
   var errorButtons = errorMessage.querySelectorAll('.error__button');
   var errorRepeatButton = errorButtons[0];
   var errorCancelButton = errorButtons[1];
+
+  var errorMessageClose = function () {
+    errorMessage.remove();
+  };
+
+  var onErrorMessageClick = function (evt) {
+    if (evt.target.className === 'error' || evt.target.className === 'error__button') {
+      errorMessageClose();
+      cancelHideVisually(photoEditForm);
+    }
+  };
+
+  var onErrorMessageEscPress = function (evt) {
+    if (evt.keyCode === ESC_KEYCODE) {
+      errorMessageClose();
+      cancelHideVisually(photoEditForm);
+    }
+  };
+
+  var onErrorRepeatButtonClick = function () {
+    errorMessageClose();
+    cancelHideVisually(photoEditForm);
+  };
+
+  var onErrorRepeatButtonEnterPress = function (evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      errorMessageClose();
+      cancelHideVisually(photoEditForm);
+    }
+  };
+
+  var onErrorCancelButtonClick = function () {
+    errorMessageClose();
+    cancelHideVisually(photoEditForm);
+    closePhotoEdit();
+  };
+
+  var onErrorCancelButtonEnterPress = function (evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      errorMessageClose();
+      cancelHideVisually(photoEditForm);
+      closePhotoEdit();
+    }
+  };
 
   hideVisually(photoEditForm);
 
