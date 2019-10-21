@@ -34,9 +34,18 @@
   var effectsList = photoEditForm.querySelector('.effects__list');
   var currentEffect = effectsList.querySelector('input[name=effect]:checked').value;
 
+  var sliderLine = photoEditForm.querySelector('.effect-level__line');
+  var sliderPin = sliderLine.querySelector('.effect-level__pin');
+  var depthLevel = sliderLine.querySelector('.effect-level__depth');
+
   // Меняет значение текущего эффекта
   var changeEffect = function () {
     currentEffect = photoEditForm.querySelector('input[name=effect]:checked').value;
+  };
+
+  var resetSlider = function () {
+    sliderPin.style.left = sliderLine.offsetWidth + 'px';
+    depthLevel.style.width = MAX_SATURATION_PERCENT + '%';
   };
 
   // Возваращает значение насыщенности эффекта
@@ -74,14 +83,11 @@
     if (evt.target.name === 'effect') {
       changeEffect();
       toggleSlider();
+      resetSlider();
       renderEffect(MAX_SATURATION_PERCENT);
     }
   };
 
-  // Возваращает процент значения насыщенности эффекта
-  var getSaturationPercent = function () {
-    return photoEditForm.querySelector('.effect-level__value').value;
-  };
 
   var defaultEffect = effectsList.querySelector('#effect-none');
 
@@ -97,10 +103,6 @@
     checkDescriptionValidity();
     resetInputBorder(hashtagsInput);
     resetInputBorder(descriptionInput);
-  };
-
-  var onSliderPinMouseUp = function () {
-    renderEffect(getSaturationPercent());
   };
 
   var onUploadButtonClick = function () {
@@ -315,8 +317,53 @@
     displaySubmitMessage();
   };
 
+  // Перемещение ползунка
+  var onSliderPinMousedown = function (evt) {
+    evt.preventDefault();
+
+    var start = evt.clientX;
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+
+      var shift = start - moveEvt.clientX;
+
+      var pinOffset = sliderPin.offsetLeft - shift;
+
+      start = moveEvt.clientX;
+
+      var getValue = function () {
+        return Math.round(pinOffset / (sliderLine.offsetWidth / MAX_SATURATION_PERCENT));
+      };
+
+      if (pinOffset >= 0 && pinOffset <= sliderLine.offsetWidth) {
+        sliderPin.style.left = pinOffset + 'px';
+      } else {
+        return;
+      }
+
+      if (sliderPin.offsetLeft < 0) {
+        sliderPin.offsetLeft = 0;
+      } else if (sliderPin.offsetLeft > sliderLine.offsetWidth) {
+        sliderPin.offsetLeft = sliderLine.offsetWidth;
+      }
+
+      renderEffect(getValue());
+      depthLevel.style.width = getValue() + '%';
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  };
+
   var uploadFile = document.querySelector('#upload-file');
-  var sliderPin = photoEditForm.querySelector('.effect-level__pin');
   var photoEditClose = photoEditForm.querySelector('.img-upload__cancel');
   var uploadSubmit = photoEditForm.querySelector('.img-upload__submit');
 
@@ -329,8 +376,8 @@
     uploadFile.removeEventListener('change', onUploadButtonClick);
     photoEditClose.addEventListener('click', onPhotoEditCloseClick);
     document.addEventListener('keydown', onPhotoEditFormEscPress);
+    sliderPin.addEventListener('mousedown', onSliderPinMousedown);
     effectsList.addEventListener('click', onEffectClick);
-    sliderPin.addEventListener('mouseup', onSliderPinMouseUp);
     hashtagsInput.addEventListener('input', onHashtagsInput);
     descriptionInput.addEventListener('input', onDescriptionInput);
     uploadSubmit.addEventListener('click', onUploadSubmitClick);
@@ -342,8 +389,8 @@
     uploadFile.addEventListener('change', onUploadButtonClick);
     photoEditClose.removeEventListener('click', onPhotoEditCloseClick);
     document.removeEventListener('keydown', onPhotoEditFormEscPress);
+    sliderPin.removeEventListener('mousedown', onSliderPinMousedown);
     effectsList.removeEventListener('click', onEffectClick);
-    sliderPin.removeEventListener('mouseup', onSliderPinMouseUp);
     hashtagsInput.removeEventListener('input', onHashtagsInput);
     descriptionInput.removeEventListener('input', onDescriptionInput);
     uploadSubmit.removeEventListener('click', onUploadSubmitClick);
