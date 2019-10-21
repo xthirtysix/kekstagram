@@ -16,7 +16,9 @@
       window.picture.openBigPicture(obj);
     });
     post.addEventListener('keydown', function (evt) {
-      window.isEnterCode(evt, window.picture.openBigPicture(obj));
+      if (evt.keyCode === window.utils.enterKeycode) {
+        window.picture.openBigPicture(obj);
+      }
     });
 
     return post;

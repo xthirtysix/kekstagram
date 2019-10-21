@@ -53,6 +53,7 @@
     getRandomNum: getRandomNum,
     hideVisually: hideVisually,
     cancelHideVisually: cancelHideVisually,
+    enterKeycode: ENTER_KEYCODE,
     isEscKeycode: function (evt, action) {
       if (evt.keyCode === ESC_KEYCODE) {
         action();
