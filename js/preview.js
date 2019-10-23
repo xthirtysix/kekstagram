@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var IMAGES_COUNT = 25;
+  // var IMAGES_COUNT = 25;
 
   var postTemplate = document.querySelector('#picture').content.querySelector('a');
 
@@ -25,17 +25,27 @@
   };
   var pictureFeed = document.querySelector('.pictures');
 
-  var renderFeed = function (feed) {
+  var onSuccessGet = function (previews) {
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < feed.length; i++) {
-      fragment.appendChild(renderPost(feed[i]));
+    for (var i = 0; i < previews.length; i++) {
+      fragment.appendChild(renderPost(previews[i]));
     }
 
     return pictureFeed.appendChild(fragment);
   };
 
-  var feed = window.data.generateFeed(IMAGES_COUNT);
+  var onErrorGet = function (errorMessage) {
+    var node = document.createElement('div');
+    node.style = 'z-index: 100; margin: 0 auto; padding: 10px 0; text-align: center; background-color: red;';
+    node.style.position = 'absolute';
+    node.style.left = 0;
+    node.style.right = 0;
+    node.style.fontSize = '24px';
 
-  renderFeed(feed);
+    node.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', node);
+  };
+
+  window.backend.load(onSuccessGet, onErrorGet);
 })();
