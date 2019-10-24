@@ -209,18 +209,23 @@
     checkDescriptionValidity();
   };
 
-  var displaySubmitMessage = function () {
-    if (hashtagsInput.validity.valid === true && descriptionInput.validity.valid === true) {
-      window.message.success();
-    } else {
-      return;
-    }
+  var onSuccessPost = function () {
+    window.message.success();
+    closePhotoEdit();
   };
 
-  var onUploadSubmitClick = function (evt) {
-    evt.preventDefault();
-    displaySubmitMessage();
+  var onErrorPost = function (message) {
+    window.message.error(message, false);
     closePhotoEdit();
+  };
+
+  var form = document.querySelector('.img-upload__form');
+
+  var onUploadSubmitClick = function (evt) {
+    if (hashtagsInput.validity.valid === true && descriptionInput.validity.valid === true) {
+      evt.preventDefault();
+      window.backend.send(new FormData(form), onSuccessPost, onErrorPost);
+    }
   };
 
   // Перемещение ползунка

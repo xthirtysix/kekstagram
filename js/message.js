@@ -37,9 +37,10 @@
 
   var displayErrorMessage = function (error, isOnGet) {
     var errorMessage = errorTemplate.cloneNode(true);
+    errorMessage.style.zIndex = '100';
     var errorTitle = errorMessage.querySelector('.error__title');
     var errorButtons = errorMessage.querySelectorAll('.error__button');
-    var errorRepeatButton = errorButtons[0];
+    var errorRetryButton = errorButtons[0];
     var errorCancelButton = errorButtons[1];
 
     var errorMessageClose = function () {
@@ -67,14 +68,14 @@
 
     if (isOnGet) {
       window.utils.hideVisually(errorCancelButton);
-      errorTitle.textContent = error;
+      errorRetryButton.addEventListener('click', onErrorRetryButtonClick);
     } else {
-      window.utils.cancelHideVisually(errorCancelButton);
+      window.utils.hideVisually(errorRetryButton);
       errorCancelButton.addEventListener('click', onErrorCancelButtonClick);
     }
+    errorTitle.textContent = error;
     errorMessage.addEventListener('click', onErrorMessageClick);
     errorMessage.addEventListener('keydown', onErrorMessageEscPress);
-    errorRepeatButton.addEventListener('click', onErrorRetryButtonClick);
 
     return main.appendChild(errorMessage);
   };
