@@ -88,7 +88,6 @@
     }
   };
 
-
   var defaultEffect = effectsList.querySelector('#effect-none');
 
   // Сбрасывает форму редактирования(загрузки) изображения на значения по умолчанию
@@ -210,44 +209,9 @@
     checkDescriptionValidity();
   };
 
-  // Показ сообщения об успешной загрузки фото
-  var main = document.querySelector('main');
-  var successTemplate = document.querySelector('#success').content.querySelector('.success');
-
-  var displaySuccessMessage = function () {
-    var successMessage = successTemplate.cloneNode(true);
-    var successButton = successMessage.querySelector('.success__button');
-
-    var successMessageClose = function () {
-      successMessage.remove();
-    };
-
-    var onSuccessMessageClick = function (evt) {
-      if (evt.target.className === 'success' || evt.target.className === 'success__button') {
-        successMessageClose();
-      }
-    };
-
-    var onSuccessMessageEscPress = function (evt) {
-      window.utils.isEscKeycode(evt, successMessageClose);
-    };
-
-    var onSuccessButtonEnterPress = function (evt) {
-      window.utils.isEnterKeycode(evt, successMessageClose);
-    };
-
-    closePhotoEdit();
-    successMessage.addEventListener('click', onSuccessMessageClick);
-    document.addEventListener('keydown', onSuccessMessageEscPress);
-    successButton.addEventListener('keydown', onSuccessButtonEnterPress);
-
-    return main.appendChild(successMessage);
-  };
-
-  // Отображает сообщение после загрузки фото
   var displaySubmitMessage = function () {
     if (hashtagsInput.validity.valid === true && descriptionInput.validity.valid === true) {
-      displaySuccessMessage();
+      window.message.success();
     } else {
       return;
     }
@@ -256,6 +220,7 @@
   var onUploadSubmitClick = function (evt) {
     evt.preventDefault();
     displaySubmitMessage();
+    closePhotoEdit();
   };
 
   // Перемещение ползунка
