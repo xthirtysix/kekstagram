@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var IMAGES_COUNT = 25;
-
   var postTemplate = document.querySelector('#picture').content.querySelector('a');
 
   var renderPost = function (obj) {
@@ -25,17 +23,27 @@
   };
   var pictureFeed = document.querySelector('.pictures');
 
-  var renderFeed = function (feed) {
+  var onSuccessGet = function (previews) {
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < feed.length; i++) {
-      fragment.appendChild(renderPost(feed[i]));
+    for (var i = 0; i < previews.length; i++) {
+      fragment.appendChild(renderPost(previews[i]));
     }
 
     return pictureFeed.appendChild(fragment);
   };
 
-  var feed = window.data.generateFeed(IMAGES_COUNT);
+  var onErrorGet = function (message) {
+    window.message.error(message, true);
+  };
 
-  renderFeed(feed);
+  var getData = function () {
+    window.backend.load(onSuccessGet, onErrorGet);
+  };
+
+  getData();
+
+  window.preview = {
+    get: getData
+  };
 })();
