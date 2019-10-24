@@ -259,9 +259,11 @@
         sliderPin.offsetLeft = sliderLine.offsetWidth;
       }
 
-      renderEffect(getValue());
-      depthLevel.style.width = getValue() + '%';
-      document.querySelector('.effect-level__value').value = getValue().toString();
+      var value = getValue();
+
+      renderEffect(value);
+      depthLevel.style.width = value + '%';
+      document.querySelector('.effect-level__value').value = value;
     };
 
     var onMouseUp = function (upEvt) {
