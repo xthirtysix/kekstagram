@@ -261,6 +261,7 @@
 
       renderEffect(getValue());
       depthLevel.style.width = getValue() + '%';
+      document.querySelector('.effect-level__value').value = getValue().toString();
     };
 
     var onMouseUp = function (upEvt) {
