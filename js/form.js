@@ -244,71 +244,12 @@
     return main.appendChild(successMessage);
   };
 
-  // Показ сообщения об ошибке загрузки фото
-  var errorTemplate = document.querySelector('#error').content.querySelector('.error');
-
-  var displayErrorMessage = function () {
-    var errorMessage = errorTemplate.cloneNode(true);
-    var errorButtons = errorMessage.querySelectorAll('.error__button');
-    var errorRepeatButton = errorButtons[0];
-    var errorCancelButton = errorButtons[1];
-
-    var errorMessageClose = function () {
-      errorMessage.remove();
-    };
-
-    var onErrorMessageClick = function (evt) {
-      if (evt.target.className === 'error' || evt.target.className === 'error__button') {
-        errorMessageClose();
-        window.utils.cancelHideVisually(photoEditForm);
-      }
-    };
-
-    var onErrorMessageEscPress = function (evt) {
-      window.utils.isEscKeycode(evt, errorMessageClose);
-      window.utils.isEscKeycode(evt, window.utils.cancelHideVisually(photoEditForm));
-    };
-
-    var onErrorRepeatButtonClick = function () {
-      errorMessageClose();
-      window.utils.cancelHideVisually(photoEditForm);
-    };
-
-    var onErrorRepeatButtonEnterPress = function (evt) {
-      window.utils.isEnterKeycode(evt, errorMessageClose);
-      window.utils.isEnterKeycode(evt, window.utils.cancelHideVisually(photoEditForm));
-    };
-
-    var onErrorCancelButtonClick = function () {
-      errorMessageClose();
-      window.utils.cancelHideVisually(photoEditForm);
-      closePhotoEdit();
-    };
-
-    var onErrorCancelButtonEnterPress = function (evt) {
-      window.utils.isEnterKeycode(evt, errorMessageClose);
-      window.utils.isEnterKeycode(evt, window.utils.cancelHideVisually(photoEditForm));
-      window.utils.isEnterKeycode(evt, window.utils.closePhotoEdit);
-    };
-
-    window.utils.hideVisually(photoEditForm);
-
-    errorMessage.addEventListener('click', onErrorMessageClick);
-    errorMessage.addEventListener('keydown', onErrorMessageEscPress);
-    errorRepeatButton.addEventListener('click', onErrorRepeatButtonClick);
-    errorRepeatButton.addEventListener('keydown', onErrorRepeatButtonEnterPress);
-    errorCancelButton.addEventListener('click', onErrorCancelButtonClick);
-    errorCancelButton.addEventListener('keydown', onErrorCancelButtonEnterPress);
-
-    return main.appendChild(errorMessage);
-  };
-
   // Отображает сообщение после загрузки фото
   var displaySubmitMessage = function () {
     if (hashtagsInput.validity.valid === true && descriptionInput.validity.valid === true) {
       displaySuccessMessage();
     } else {
-      displayErrorMessage();
+      return;
     }
   };
 

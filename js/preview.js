@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  // var IMAGES_COUNT = 25;
-
   var postTemplate = document.querySelector('#picture').content.querySelector('a');
 
   var renderPost = function (obj) {
@@ -35,17 +33,17 @@
     return pictureFeed.appendChild(fragment);
   };
 
-  var onErrorGet = function (errorMessage) {
-    var node = document.createElement('div');
-    node.style = 'z-index: 100; margin: 0 auto; padding: 10px 0; text-align: center; background-color: red;';
-    node.style.position = 'absolute';
-    node.style.left = 0;
-    node.style.right = 0;
-    node.style.fontSize = '24px';
-
-    node.textContent = errorMessage;
-    document.body.insertAdjacentElement('afterbegin', node);
+  var onErrorGet = function (message) {
+    window.message.error(message, true);
   };
 
-  window.backend.load(onSuccessGet, onErrorGet);
+  var getData = function () {
+    window.backend.load(onSuccessGet, onErrorGet);
+  };
+
+  getData();
+
+  window.preview = {
+    get: getData
+  };
 })();
