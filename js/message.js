@@ -35,7 +35,7 @@
 
   var errorTemplate = document.querySelector('#error').content.querySelector('.error');
 
-  var displayErrorMessage = function (error, isOnGet) {
+  var displayErrorMessage = function (error, retryAction) {
     var errorMessage = errorTemplate.cloneNode(true);
     errorMessage.style.zIndex = '100';
     var errorTitle = errorMessage.querySelector('.error__title');
@@ -53,29 +53,25 @@
       }
     };
 
-    var onErrorRetryButtonClick = function () {
-      errorMessageClose();
-      window.preview.get();
-    };
-
     var onErrorMessageEscPress = function (evt) {
       window.utils.isEscKeycode(evt, errorMessageClose);
+    };
+
+    var onErrorRetryButtonClick = function () {
+      errorMessageClose();
+      retryAction();
     };
 
     var onErrorCancelButtonClick = function () {
       errorMessageClose();
     };
 
-    if (isOnGet) {
-      window.utils.hideVisually(errorCancelButton);
-      errorRetryButton.addEventListener('click', onErrorRetryButtonClick);
-    } else {
-      window.utils.hideVisually(errorRetryButton);
-      errorCancelButton.addEventListener('click', onErrorCancelButtonClick);
-    }
-    errorTitle.textContent = error;
     errorMessage.addEventListener('click', onErrorMessageClick);
     errorMessage.addEventListener('keydown', onErrorMessageEscPress);
+    errorRetryButton.addEventListener('click', onErrorRetryButtonClick);
+    errorCancelButton.addEventListener('click', onErrorCancelButtonClick);
+
+    errorTitle.textContent = error;
 
     return main.appendChild(errorMessage);
   };

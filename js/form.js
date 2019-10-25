@@ -209,13 +209,17 @@
     checkDescriptionValidity();
   };
 
-  var onSuccessPost = function () {
+  var onSuccess = function () {
     window.message.success();
     closePhotoEdit();
   };
 
-  var onErrorPost = function (message) {
-    window.message.error(message, false);
+  var sendData = function () {
+    return window.backend.send(new FormData(form), onSuccess, onError);
+  };
+
+  var onError = function (message) {
+    window.message.error(message, sendData);
     closePhotoEdit();
   };
 
@@ -224,7 +228,7 @@
   var onUploadSubmitClick = function (evt) {
     if (hashtagsInput.validity.valid === true && descriptionInput.validity.valid === true) {
       evt.preventDefault();
-      window.backend.send(new FormData(form), onSuccessPost, onErrorPost);
+      sendData();
     }
   };
 

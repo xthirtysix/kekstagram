@@ -1,7 +1,7 @@
 'use strict';
 (function () {
   var URL = {
-    get: 'https://js.dump.academy/kekstagram/data',
+    get: 'https://js.dump.academy/kekstagram/datda',
     post: 'https://js.dump.academy/kekstagram'
   };
 
@@ -24,7 +24,7 @@
           onSuccess(xhr.response);
           break;
         case (RESPONSE_CODES.notFound):
-          onError('Адрес зпроса не найден');
+          onError('Адрес запроса не найден');
           break;
         default:
           onError('Статус ответа ' + xhr.status + ' ' + xhr.statusText);
