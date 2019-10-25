@@ -1,7 +1,7 @@
 'use strict';
 (function () {
   var URL = {
-    get: 'https://js.dump.academy/kekstagram/datda',
+    get: 'https://js.dump.academy/kekstagram/data',
     post: 'https://js.dump.academy/kekstagram'
   };
 
