@@ -35,11 +35,12 @@
 
   var errorTemplate = document.querySelector('#error').content.querySelector('.error');
 
-  var displayErrorMessage = function (error, isOnGet) {
+  var displayErrorMessage = function (error, retryAction) {
     var errorMessage = errorTemplate.cloneNode(true);
+    errorMessage.style.zIndex = '100';
     var errorTitle = errorMessage.querySelector('.error__title');
     var errorButtons = errorMessage.querySelectorAll('.error__button');
-    var errorRepeatButton = errorButtons[0];
+    var errorRetryButton = errorButtons[0];
     var errorCancelButton = errorButtons[1];
 
     var errorMessageClose = function () {
@@ -52,29 +53,25 @@
       }
     };
 
-    var onErrorRetryButtonClick = function () {
-      errorMessageClose();
-      window.preview.get();
-    };
-
     var onErrorMessageEscPress = function (evt) {
       window.utils.isEscKeycode(evt, errorMessageClose);
+    };
+
+    var onErrorRetryButtonClick = function () {
+      errorMessageClose();
+      retryAction();
     };
 
     var onErrorCancelButtonClick = function () {
       errorMessageClose();
     };
 
-    if (isOnGet) {
-      window.utils.hideVisually(errorCancelButton);
-      errorTitle.textContent = error;
-    } else {
-      window.utils.cancelHideVisually(errorCancelButton);
-      errorCancelButton.addEventListener('click', onErrorCancelButtonClick);
-    }
     errorMessage.addEventListener('click', onErrorMessageClick);
     errorMessage.addEventListener('keydown', onErrorMessageEscPress);
-    errorRepeatButton.addEventListener('click', onErrorRetryButtonClick);
+    errorRetryButton.addEventListener('click', onErrorRetryButtonClick);
+    errorCancelButton.addEventListener('click', onErrorCancelButtonClick);
+
+    errorTitle.textContent = error;
 
     return main.appendChild(errorMessage);
   };

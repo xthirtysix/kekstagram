@@ -23,7 +23,7 @@
   };
   var pictureFeed = document.querySelector('.pictures');
 
-  var onSuccessGet = function (previews) {
+  var onSuccess = function (previews) {
     var fragment = document.createDocumentFragment();
 
     for (var i = 0; i < previews.length; i++) {
@@ -33,12 +33,12 @@
     return pictureFeed.appendChild(fragment);
   };
 
-  var onErrorGet = function (message) {
-    window.message.error(message, true);
+  var onError = function (message) {
+    window.message.error(message, getData);
   };
 
   var getData = function () {
-    window.backend.load(onSuccessGet, onErrorGet);
+    window.backend.load(onSuccess, onError);
   };
 
   getData();

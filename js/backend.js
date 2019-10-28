@@ -1,15 +1,22 @@
 'use strict';
-
 (function () {
-  var FEED_DATA_URL = 'https://js.dump.academy/kekstagram/data';
+  var URL = {
+    get: 'https://js.dump.academy/kekstagram/data',
+    post: 'https://js.dump.academy/kekstagram'
+  };
+
   var RESPONSE_CODES = {
     success: 200,
     notFound: 404
   };
 
-  var load = function (onSuccess, onError) {
+  var TIMEOUT = 5000;
+
+  var generateXhr = function (timeout, onSuccess, onError) {
     var xhr = new XMLHttpRequest();
+
     xhr.responseType = 'json';
+    xhr.timeout = timeout;
 
     xhr.addEventListener('load', function () {
       switch (xhr.status) {
@@ -17,7 +24,7 @@
           onSuccess(xhr.response);
           break;
         case (RESPONSE_CODES.notFound):
-          onError('Адрес зпроса не найден');
+          onError('Адрес запроса не найден');
           break;
         default:
           onError('Статус ответа ' + xhr.status + ' ' + xhr.statusText);
@@ -32,13 +39,25 @@
       onError('Превышен лимит ожидания');
     });
 
-    xhr.timeout = 5000;
-    xhr.open('GET', FEED_DATA_URL);
+    return xhr;
+  };
 
+  var load = function (onSuccess, onError) {
+    var xhr = generateXhr(TIMEOUT, onSuccess, onError);
+
+    xhr.open('GET', URL.get);
     xhr.send();
   };
 
+  var send = function (data, onSuccess, onError) {
+    var xhr = generateXhr(TIMEOUT, onSuccess, onError);
+
+    xhr.open('POST', URL.post);
+    xhr.send(data);
+  };
+
   window.backend = {
-    load: load
+    load: load,
+    send: send
   };
 })();

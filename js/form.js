@@ -209,18 +209,27 @@
     checkDescriptionValidity();
   };
 
-  var displaySubmitMessage = function () {
-    if (hashtagsInput.validity.valid === true && descriptionInput.validity.valid === true) {
-      window.message.success();
-    } else {
-      return;
-    }
+  var onSuccess = function () {
+    window.message.success();
+    closePhotoEdit();
   };
 
-  var onUploadSubmitClick = function (evt) {
-    evt.preventDefault();
-    displaySubmitMessage();
+  var sendData = function () {
+    return window.backend.send(new FormData(form), onSuccess, onError);
+  };
+
+  var onError = function (message) {
+    window.message.error(message, sendData);
     closePhotoEdit();
+  };
+
+  var form = document.querySelector('.img-upload__form');
+
+  var onUploadSubmitClick = function (evt) {
+    if (hashtagsInput.validity.valid === true && descriptionInput.validity.valid === true) {
+      evt.preventDefault();
+      sendData();
+    }
   };
 
   // Перемещение ползунка
@@ -254,8 +263,11 @@
         sliderPin.offsetLeft = sliderLine.offsetWidth;
       }
 
-      renderEffect(getValue());
-      depthLevel.style.width = getValue() + '%';
+      var value = getValue();
+
+      renderEffect(value);
+      depthLevel.style.width = value + '%';
+      document.querySelector('.effect-level__value').value = value;
     };
 
     var onMouseUp = function (upEvt) {
