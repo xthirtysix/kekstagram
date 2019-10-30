@@ -1,13 +1,14 @@
 'use strict';
 (function () {
-  var URL = {
-    get: 'https://js.dump.academy/kekstagram/data',
-    post: 'https://js.dump.academy/kekstagram'
+  var Url = {
+    GET: 'https://js.dump.academy/kekstagram/data',
+    POST: 'https://js.dump.academy/kekstagram'
   };
 
-  var RESPONSE_CODES = {
-    success: 200,
-    notFound: 404
+  var Code = {
+    SUCCESS: 200,
+    NOT_FOUND: 404,
+    SERVER_ERROR: 500
   };
 
   var TIMEOUT = 5000;
@@ -20,11 +21,14 @@
 
     xhr.addEventListener('load', function () {
       switch (xhr.status) {
-        case (RESPONSE_CODES.success):
+        case (Code.SUCCESS):
           onSuccess(xhr.response);
           break;
-        case (RESPONSE_CODES.notFound):
+        case (Code.NOT_FOUND):
           onError('Адрес запроса не найден');
+          break;
+        case (Code.SERVER_ERROR):
+          onError('Ошибка сервера');
           break;
         default:
           onError('Статус ответа ' + xhr.status + ' ' + xhr.statusText);
@@ -45,14 +49,14 @@
   var load = function (onSuccess, onError) {
     var xhr = generateXhr(TIMEOUT, onSuccess, onError);
 
-    xhr.open('GET', URL.get);
+    xhr.open('GET', Url.GET);
     xhr.send();
   };
 
   var send = function (data, onSuccess, onError) {
     var xhr = generateXhr(TIMEOUT, onSuccess, onError);
 
-    xhr.open('POST', URL.post);
+    xhr.open('POST', Url.POST);
     xhr.send(data);
   };
 

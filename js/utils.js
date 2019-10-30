@@ -1,8 +1,10 @@
 'use strict';
 
 (function () {
-  var ESC_KEYCODE = 27;
-  var ENTER_KEYCODE = 13;
+  var Keycode = {
+    ESC: 27,
+    ENTER: 13
+  };
 
   var shuffleArray = function (arr) {
     var i;
@@ -35,6 +37,16 @@
     return false;
   };
 
+  var comparator = function (a, b) {
+    if (a < b) {
+      return 1;
+    } else if (a > b) {
+      return -1;
+    } else {
+      return 0;
+    }
+  };
+
   var getRandomNum = function (min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   };
@@ -47,20 +59,38 @@
     element.classList.remove('visually-hidden');
   };
 
+  var debounce = function (cb, timeout) {
+    var lastTimeout = null;
+
+    return function () {
+      var args = arguments;
+
+      if (lastTimeout) {
+        window.clearTimeout(lastTimeout);
+      }
+
+      lastTimeout = window.setTimeout(function () {
+        cb.apply(null, args);
+      }, timeout);
+    };
+  };
+
   window.utils = {
     shuffleArray: shuffleArray,
     hasDuplicates: hasDuplicates,
+    comparator: comparator,
     getRandomNum: getRandomNum,
     hideVisually: hideVisually,
     cancelHideVisually: cancelHideVisually,
-    enterKeycode: ENTER_KEYCODE,
+    enterKeycode: Keycode.ENTER,
+    debounce: debounce,
     isEscKeycode: function (evt, action) {
-      if (evt.keyCode === ESC_KEYCODE) {
+      if (evt.keyCode === Keycode.ESC) {
         action();
       }
     },
     isEnterKeycode: function (evt, action) {
-      if (evt.keyCode === ENTER_KEYCODE) {
+      if (evt.keyCode === Keycode.ENTER) {
         action();
       }
     }

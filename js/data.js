@@ -26,10 +26,15 @@
 
   var AVATARS_COUNT = 6;
   var MAX_MESSAGE_LENGTH = 2;
-  var MIN_COMMENTS = 1;
-  var MAX_COMMENTS = 5;
-  var MIN_LIKES = 15;
-  var MAX_LIKES = 200;
+
+  var CommentsNum = {
+    MIN: 1,
+    MAX: 5
+  };
+  var LikesNum = {
+    MIN: 15,
+    MAX: 200
+  };
 
   // Возвращает сгенерированное пользовательское сообщение
   var generateMessage = function (messageTemplates, length) {
@@ -63,7 +68,7 @@
   // Возвращает массив пользовательских комментариев
   var generateCommentsFeed = function () {
     var comments = [];
-    var commentsCount = window.utils.getRandomNum(MIN_COMMENTS, MAX_COMMENTS);
+    var commentsCount = window.utils.getRandomNum(CommentsNum.MIN, CommentsNum.MAX);
 
     for (var i = 0; i < commentsCount; i++) {
       comments.push(generateComment());
@@ -81,7 +86,7 @@
 
       post.url = getPostImageUrl(i + 1);
       post.description = 'Сфотографировано на калькулятор';
-      post.likes = window.utils.getRandomNum(MIN_LIKES, MAX_LIKES);
+      post.likes = window.utils.getRandomNum(LikesNum.MIN, LikesNum.MAX);
       post.comments = generateCommentsFeed();
       feed.push(post);
     }
