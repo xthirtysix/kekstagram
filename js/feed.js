@@ -10,7 +10,7 @@
     var filters = document.querySelector('.img-filters');
     filters.classList.remove('img-filters--inactive');
 
-    var onFilterButtonsClick = function (evt) {
+    var changeFilter = function (evt) {
       evt.preventDefault();
 
       buttonsContainer.querySelector('.' + activeClass)
@@ -19,6 +19,8 @@
       evt.target.classList.add(activeClass);
       window.render(window.useFilter(feed, evt.target.id));
     };
+
+    var onFilterButtonsClick = window.utils.debounce(changeFilter);
 
     buttons.forEach(function (el) {
       el.addEventListener('click', onFilterButtonsClick);
@@ -34,5 +36,4 @@
   };
 
   getData();
-
 })();

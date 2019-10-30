@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var DEBOUNCE_TIMOUT = 500;
+
   var Keycode = {
     ESC: 27,
     ENTER: 13
@@ -59,7 +61,7 @@
     element.classList.remove('visually-hidden');
   };
 
-  var debounce = function (cb, timeout) {
+  var debounce = function (cb) {
     var lastTimeout = null;
 
     return function () {
@@ -71,7 +73,7 @@
 
       lastTimeout = window.setTimeout(function () {
         cb.apply(null, args);
-      }, timeout);
+      }, DEBOUNCE_TIMOUT);
     };
   };
 
