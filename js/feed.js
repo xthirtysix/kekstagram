@@ -1,30 +1,10 @@
 'use strict';
 (function () {
-  var buttonsContainer = document.querySelector('.img-filters__form');
-  var buttons = buttonsContainer.querySelectorAll('.img-filters__button');
-  var activeClass = 'img-filters__button--active';
-
   var onSuccess = function (data) {
-    var feed = data.slice();
-    window.render(feed);
-    var filters = document.querySelector('.img-filters');
-    filters.classList.remove('img-filters--inactive');
-
-    var changeFilter = function (evt) {
-      evt.preventDefault();
-
-      buttonsContainer.querySelector('.' + activeClass)
-      .classList.remove(activeClass);
-
-      evt.target.classList.add(activeClass);
-      window.render(window.useFilter(feed, evt.target.id));
-    };
-
-    var onFilterButtonsClick = window.utils.debounce(changeFilter);
-
-    buttons.forEach(function (el) {
-      el.addEventListener('click', onFilterButtonsClick);
-    });
+    window.feed = data.slice();
+    window.render(window.feed);
+    var feedFilter = document.querySelector('.img-filters');
+    feedFilter.classList.remove('img-filters--inactive');
   };
 
   var onError = function (message) {
@@ -36,4 +16,6 @@
   };
 
   getData();
+
+  window.feed = [];
 })();

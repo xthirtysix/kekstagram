@@ -1,5 +1,4 @@
 'use strict';
-
 (function () {
   var main = document.querySelector('main');
   var successTemplate = document.querySelector('#success').content.querySelector('.success');

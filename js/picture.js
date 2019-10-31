@@ -107,5 +107,7 @@
     document.removeEventListener('keydown', onPictureEscPress);
   };
 
-  window.openPicture = openPicture;
+  window.picture = {
+    open: openPicture
+  };
 })();

@@ -84,7 +84,6 @@
     getRandomNum: getRandomNum,
     hideVisually: hideVisually,
     cancelHideVisually: cancelHideVisually,
-    enterKeycode: Keycode.ENTER,
     debounce: debounce,
     isEscKeycode: function (evt, action) {
       if (evt.keyCode === Keycode.ESC) {
