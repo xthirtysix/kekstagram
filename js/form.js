@@ -30,7 +30,8 @@
     }
   };
 
-  var photoEditForm = document.querySelector('.img-upload__overlay');
+  var form = document.querySelector('.img-upload__form');
+  var photoEditForm = form.querySelector('.img-upload__overlay');
   var effectsList = photoEditForm.querySelector('.effects__list');
   var currentEffect = effectsList.querySelector('input[name=effect]:checked').value;
 
@@ -222,8 +223,6 @@
     window.message.error(message, sendData);
     closePhotoEdit();
   };
-
-  var form = document.querySelector('.img-upload__form');
 
   var onUploadSubmitClick = function (evt) {
     if (hashtagsInput.validity.valid === true && descriptionInput.validity.valid === true) {
