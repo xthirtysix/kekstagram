@@ -10,11 +10,11 @@
     post.querySelector('.picture__comments').textContent = obj.comments.length;
 
     post.addEventListener('click', function () {
-      window.openPicture(obj);
+      window.picture.open(obj);
     });
     post.addEventListener('keydown', function (evt) {
       if (evt.keyCode === window.utils.enterKeycode) {
-        window.openPicture(obj);
+        window.picture.open(obj);
       }
     });
 
