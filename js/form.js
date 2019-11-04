@@ -32,7 +32,9 @@
 
   var Zoom = {
     DEFAULT: 100,
-    STEP: 25
+    STEP: 25,
+    MIN: 25,
+    MAX: 100
   };
 
   var form = document.querySelector('.img-upload__form');
@@ -99,6 +101,7 @@
 
   // Сбрасывает форму редактирования(загрузки) изображения на значения по умолчанию
   var resetUploadForm = function () {
+    zoomValue.value = Zoom.DEFAULT;
     hashtagsInput.value = '';
     descriptionInput.value = '';
     defaultEffect.checked = true;
@@ -301,37 +304,19 @@
   var uploadedImageContainer = document.querySelector('.img-upload__preview');
   var uploadedImage = uploadedImageContainer.querySelector('img');
 
-  var zoomIn = function () {
-    if (parseFloat(zoomValue.value) <= 50) {
-      var newValue = parseFloat(zoomValue.value) + Zoom.STEP;
-      uploadedImage.style.transform = 'scale(0.' + newValue + ')';
-      zoomValue.value = newValue + '%';
-    } else if (parseFloat(zoomValue.value) === 75) {
-      uploadedImage.style.transform = 'scale(1)';
-      zoomValue.value = '100%';
-    }
-  };
-
-  var zoomOut = function () {
-    if (parseFloat(zoomValue.value) > 25) {
-      var newValue = parseFloat(zoomValue.value) - Zoom.STEP;
-      uploadedImage.style.transform = 'scale(0.' + newValue + ')';
-      zoomValue.value = newValue + '%';
-    }
-  };
-
   var zoomResetValue = function () {
     zoomValue.value = Zoom.DEFAULT + '%';
   };
 
   var onZoomInButtonClick = function (evt) {
     evt.preventDefault();
-    zoomIn();
+    window.zoom.in(uploadedImage, zoomValue, Zoom.MAX, Zoom.STEP);
+    zoomValue.value = window.zoom.in(uploadedImage, zoomValue.value, Zoom.MAX, Zoom.STEP);
   };
 
-  var onZoomOutButtonClick = function (evt) {
-    evt.preventDefault();
-    zoomOut();
+  var onZoomOutButtonClick = function () {
+    window.zoom.out(uploadedImage, zoomValue, Zoom.MIN, Zoom.STEP);
+    zoomValue.value = window.zoom.out(uploadedImage, zoomValue.value, Zoom.MIN, Zoom.STEP);
   };
 
   // Открыть/закрыть форму редактирования(загрузки) изображения.
