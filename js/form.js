@@ -7,27 +7,32 @@
   var MAX_HASHTAG_LENGTH = 20;
   var MAX_HASHTAG_COUNT = 5;
 
-  var EFFECTS = {
-    chrome: {
+  var Effect = {
+    CHROME: {
       min: 0,
       max: 1
     },
-    sepia: {
+    SEPIA: {
       min: 0,
       max: 1
     },
-    marvin: {
+    MARVIN: {
       min: 0,
       max: 100
     },
-    phobos: {
+    PHOBOS: {
       min: 0,
       max: 3
     },
-    heat: {
+    HEAT: {
       min: 1,
       max: 3
     }
+  };
+
+  var Zoom = {
+    DEFAULT: 100,
+    STEP: 25
   };
 
   var form = document.querySelector('.img-upload__form');
@@ -60,19 +65,19 @@
   var renderEffect = function (percent) {
     switch (currentEffect) {
       case 'chrome':
-        editableImage.style = 'filter: grayscale(' + findSaturationValue(EFFECTS.chrome, percent) + ')';
+        editableImage.style = 'filter: grayscale(' + findSaturationValue(Effect.CHROME, percent) + ')';
         break;
       case 'sepia':
-        editableImage.style = 'filter: sepia(' + findSaturationValue(EFFECTS.sepia, percent) + ')';
+        editableImage.style = 'filter: SEPIA(' + findSaturationValue(Effect.SEPIA, percent) + ')';
         break;
       case 'marvin':
-        editableImage.style = 'filter: invert(' + findSaturationValue(EFFECTS.marvin, percent) + '%)';
+        editableImage.style = 'filter: invert(' + findSaturationValue(Effect.MARVIN, percent) + '%)';
         break;
       case 'phobos':
-        editableImage.style = 'filter: blur(' + findSaturationValue(EFFECTS.phobos, percent) + 'px)';
+        editableImage.style = 'filter: blur(' + findSaturationValue(Effect.PHOBOS, percent) + 'px)';
         break;
       case 'heat':
-        editableImage.style = 'filter: brightness(' + findSaturationValue(EFFECTS.heat, percent) + ')';
+        editableImage.style = 'filter: brightness(' + findSaturationValue(Effect.HEAT, percent) + ')';
         break;
       default:
         editableImage.style = '';
@@ -85,6 +90,7 @@
       changeEffect();
       toggleSlider();
       resetSlider();
+      zoomResetValue();
       renderEffect(MAX_SATURATION_PERCENT);
     }
   };
@@ -96,6 +102,7 @@
     hashtagsInput.value = '';
     descriptionInput.value = '';
     defaultEffect.checked = true;
+    zoomResetValue();
     changeEffect();
     toggleSlider();
     renderEffect();
@@ -286,6 +293,47 @@
 
   uploadFile.addEventListener('change', onUploadButtonClick);
 
+  // Zoom
+  var scaleControl = form.querySelector('.img-upload__scale');
+  var zoomOutButton = scaleControl.querySelector('.scale__control--smaller');
+  var zoomInButton = scaleControl.querySelector('.scale__control--bigger');
+  var zoomValue = scaleControl.querySelector('.scale__control--value');
+  var uploadedImageContainer = document.querySelector('.img-upload__preview');
+  var uploadedImage = uploadedImageContainer.querySelector('img');
+
+  var zoomIn = function () {
+    if (parseFloat(zoomValue.value) <= 50) {
+      var newValue = parseFloat(zoomValue.value) + Zoom.STEP;
+      uploadedImage.style.transform = 'scale(0.' + newValue + ')';
+      zoomValue.value = newValue + '%';
+    } else if (parseFloat(zoomValue.value) === 75) {
+      uploadedImage.style.transform = 'scale(1)';
+      zoomValue.value = '100%';
+    }
+  };
+
+  var zoomOut = function () {
+    if (parseFloat(zoomValue.value) > 25) {
+      var newValue = parseFloat(zoomValue.value) - Zoom.STEP;
+      uploadedImage.style.transform = 'scale(0.' + newValue + ')';
+      zoomValue.value = newValue + '%';
+    }
+  };
+
+  var zoomResetValue = function () {
+    zoomValue.value = Zoom.DEFAULT + '%';
+  };
+
+  var onZoomInButtonClick = function (evt) {
+    evt.preventDefault();
+    zoomIn();
+  };
+
+  var onZoomOutButtonClick = function (evt) {
+    evt.preventDefault();
+    zoomOut();
+  };
+
   // Открыть/закрыть форму редактирования(загрузки) изображения.
   var openPhotoEdit = function () {
     resetUploadForm();
@@ -298,6 +346,8 @@
     hashtagsInput.addEventListener('input', onHashtagsInput);
     descriptionInput.addEventListener('input', onDescriptionInput);
     uploadSubmit.addEventListener('click', onUploadSubmitClick);
+    zoomInButton.addEventListener('click', onZoomInButtonClick);
+    zoomOutButton.addEventListener('click', onZoomOutButtonClick);
   };
 
   var closePhotoEdit = function () {
@@ -311,5 +361,7 @@
     hashtagsInput.removeEventListener('input', onHashtagsInput);
     descriptionInput.removeEventListener('input', onDescriptionInput);
     uploadSubmit.removeEventListener('click', onUploadSubmitClick);
+    zoomInButton.removeEventListener('click', onZoomInButtonClick);
+    zoomOutButton.removeEventListener('click', onZoomOutButtonClick);
   };
 })();
