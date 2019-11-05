@@ -29,25 +29,11 @@
     'filter-discussed': filterDiscussed
   };
 
-  var buttonsContainer = document.querySelector('.img-filters__form');
-  var activeClass = 'img-filters__button--active';
-
-  var changeFilter = function (evt) {
-    var feed = window.feed.slice();
-    evt.preventDefault();
-
-    buttonsContainer.querySelector('.' + activeClass)
-      .classList.remove(activeClass);
-
-    evt.target.classList.add(activeClass);
-    window.render(useFilter(feed, evt.target.id));
-  };
-
-  var onFilterButtonsClick = window.utils.debounce(changeFilter);
-
-  buttonsContainer.addEventListener('click', onFilterButtonsClick);
-
   var useFilter = function (feed, id) {
     return buttonIdToFilter[id](feed);
+  };
+
+  window.filter = {
+    apply: useFilter
   };
 })();

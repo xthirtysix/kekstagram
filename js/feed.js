@@ -1,10 +1,27 @@
 'use strict';
 (function () {
+  var buttonsContainer = document.querySelector('.img-filters__form');
+  var activeClass = 'img-filters__button--active';
+  var feedFilter = document.querySelector('.img-filters');
+
   var onSuccess = function (data) {
-    window.feed = data.slice();
-    window.render(window.feed);
-    var feedFilter = document.querySelector('.img-filters');
+    var feed = data.slice();
+    window.render(feed);
     feedFilter.classList.remove('img-filters--inactive');
+
+    var changeFilter = function (evt) {
+      evt.preventDefault();
+
+      buttonsContainer.querySelector('.' + activeClass)
+        .classList.remove(activeClass);
+
+      evt.target.classList.add(activeClass);
+      window.render(window.filter.apply(feed, evt.target.id));
+    };
+
+    var onFilterButtonsClick = window.utils.debounce(changeFilter);
+
+    buttonsContainer.addEventListener('click', onFilterButtonsClick);
   };
 
   var onError = function (message) {
@@ -16,6 +33,4 @@
   };
 
   getData();
-
-  window.feed = [];
 })();
