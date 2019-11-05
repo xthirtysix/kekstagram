@@ -29,11 +29,11 @@
     'filter-discussed': filterDiscussed
   };
 
-  var useFilter = function (feed, id) {
+  var applyFilter = function (feed, id) {
     return buttonIdToFilter[id](feed);
   };
 
   window.filter = {
-    apply: useFilter
+    apply: applyFilter
   };
 })();

@@ -2,7 +2,7 @@
 (function () {
   var Url = {
     GET: 'https://js.dump.academy/kekstagram/data',
-    POST: 'https://js.dump.academy/kekstagram'
+    POST: 'https://js.dump.academy/kekstagram',
   };
 
   var Code = {

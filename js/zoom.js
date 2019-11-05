@@ -1,25 +1,31 @@
 'use strict';
 (function () {
   var zoomIn = function (image, currentValue, maxValue, step) {
-    if (parseFloat(currentValue) < maxValue - step) {
-      var newValue = parseFloat(currentValue) + step;
-      image.style.transform = 'scale(0.' + newValue + ')';
+    var integer = parseInt(currentValue, 10);
+    var newValue;
+
+    if (integer < maxValue - step) {
+      newValue = integer + step;
       currentValue = newValue + '%';
-    } else if (parseFloat(currentValue) >= maxValue - step) {
-      image.style.transform = 'scale(1)';
+    } else if (integer >= maxValue - step) {
+      newValue = maxValue;
       currentValue = '100%';
     }
 
+    image.style.transform = 'scale(' + newValue / 100 + ')';
     return currentValue;
   };
 
   var zoomOut = function (image, currentValue, minValue, step) {
-    if (parseFloat(currentValue) > minValue) {
-      var newValue = parseFloat(currentValue) - step;
-      image.style.transform = 'scale(0.' + newValue + ')';
+    var integer = parseInt(currentValue, 10);
+    var newValue;
+
+    if (integer > minValue) {
+      newValue = integer - step;
       currentValue = newValue + '%';
     }
 
+    image.style.transform = 'scale(' + newValue / 100 + ')';
     return currentValue;
   };
 

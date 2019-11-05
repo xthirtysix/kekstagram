@@ -79,7 +79,7 @@
 
   // Возвращает массив сгенерированных пользовательских постов
   var generateFeed = function (length) {
-    var feed = [];
+    var previews = [];
 
     for (var i = 0; i < length; i++) {
       var post = {};
@@ -88,10 +88,10 @@
       post.description = 'Сфотографировано на калькулятор';
       post.likes = window.utils.getRandomNum(LikesNum.MIN, LikesNum.MAX);
       post.comments = generateCommentsFeed();
-      feed.push(post);
+      previews.push(post);
     }
 
-    return feed;
+    return previews;
   };
 
   window.data = {

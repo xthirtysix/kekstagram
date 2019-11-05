@@ -3,9 +3,11 @@
   var MAX_DESCRIPTION_LENGTH = 140;
   var MAX_SATURATION_PERCENT = 100;
 
-  var MIN_HASTAG_LENGTH = 2;
-  var MAX_HASHTAG_LENGTH = 20;
-  var MAX_HASHTAG_COUNT = 5;
+  var Hashtag = {
+    MIN_LENGTH: 2,
+    MAX_LENGTH: 20,
+    COUNT: 5
+  };
 
   var Effect = {
     CHROME: {
@@ -67,22 +69,22 @@
   var renderEffect = function (percent) {
     switch (currentEffect) {
       case 'chrome':
-        editableImage.style = 'filter: grayscale(' + findSaturationValue(Effect.CHROME, percent) + ')';
+        editableImage.style.filter = 'grayscale(' + findSaturationValue(Effect.CHROME, percent) + ')';
         break;
       case 'sepia':
-        editableImage.style = 'filter: SEPIA(' + findSaturationValue(Effect.SEPIA, percent) + ')';
+        editableImage.style.filter = 'sepia(' + findSaturationValue(Effect.SEPIA, percent) + ')';
         break;
       case 'marvin':
-        editableImage.style = 'filter: invert(' + findSaturationValue(Effect.MARVIN, percent) + '%)';
+        editableImage.style.filter = 'invert(' + findSaturationValue(Effect.MARVIN, percent) + '%)';
         break;
       case 'phobos':
-        editableImage.style = 'filter: blur(' + findSaturationValue(Effect.PHOBOS, percent) + 'px)';
+        editableImage.style.filter = 'blur(' + findSaturationValue(Effect.PHOBOS, percent) + 'px)';
         break;
       case 'heat':
-        editableImage.style = 'filter: brightness(' + findSaturationValue(Effect.HEAT, percent) + ')';
+        editableImage.style.filter = 'brightness(' + findSaturationValue(Effect.HEAT, percent) + ')';
         break;
       default:
-        editableImage.style = '';
+        editableImage.style.filter = '';
         break;
     }
   };
@@ -92,7 +94,6 @@
       changeEffect();
       toggleSlider();
       resetSlider();
-      zoomResetValue();
       renderEffect(MAX_SATURATION_PERCENT);
     }
   };
@@ -101,18 +102,15 @@
 
   // Сбрасывает форму редактирования(загрузки) изображения на значения по умолчанию
   var resetUploadForm = function () {
-    zoomValue.value = Zoom.DEFAULT;
-    hashtagsInput.value = '';
-    descriptionInput.value = '';
+    resetZoomValue();
     defaultEffect.checked = true;
-    zoomResetValue();
     changeEffect();
     toggleSlider();
     renderEffect();
+    hashtagsInput.value = '';
     checkHashtagsValidity();
+    descriptionInput.value = '';
     checkDescriptionValidity();
-    resetInputBorder(hashtagsInput);
-    resetInputBorder(descriptionInput);
   };
 
   var onUploadButtonClick = function () {
@@ -124,9 +122,10 @@
   };
 
   var hashtagsInput = document.querySelector('.text__hashtags');
+  var descriptionInput = photoEditForm.querySelector('.text__description');
 
   var onPhotoEditFormEscPress = function (evt) {
-    if (hashtagsInput !== document.activeElement) {
+    if (hashtagsInput !== document.activeElement && descriptionInput !== document.activeElement) {
       window.utils.isEscKeycode(evt, closePhotoEdit);
     }
   };
@@ -167,8 +166,8 @@
         if (array[i][0] !== '#') {
           errorMessage = 'Хэштэг должен начинаться с "#"';
           break;
-        } else if (array[i].length < MIN_HASTAG_LENGTH || array[i].length > MAX_HASHTAG_LENGTH) {
-          errorMessage = 'Допустимая длина хэштэга - от ' + MIN_HASTAG_LENGTH + ' до ' + MAX_HASHTAG_LENGTH + ' символов, включая "#"';
+        } else if (array[i].length < Hashtag.MIN_LENGTH || array[i].length > Hashtag.MAX_LENGTH) {
+          errorMessage = 'Допустимая длина хэштэга - от ' + Hashtag.MIN_LENGTH + ' до ' + Hashtag.MAX_LENGTH + ' символов, включая "#"';
           break;
         } else {
           errorMessage = '';
@@ -176,10 +175,10 @@
       }
     };
 
-    if (hashtags.length > MAX_HASHTAG_COUNT) {
-      errorMessage = 'Макимальное количество хэштэгов - ' + MAX_HASHTAG_COUNT;
+    if (hashtags.length > Hashtag.COUNT) {
+      errorMessage = 'Макимальное количество хэштэгов - ' + Hashtag.COUNT;
     } else if (window.utils.hasDuplicates(hashtags)) {
-      errorMessage = 'Хэштэги не чувствительны к регистру, и не должны повторяться.';
+      errorMessage = 'Хэштэги нечувствительны к регистру, и не должны повторяться.';
     } else {
       validateHashtagsInArray(hashtags);
     }
@@ -198,8 +197,6 @@
   };
 
   // Валидация описания загружаемой фотографии
-  var descriptionInput = photoEditForm.querySelector('.text__description');
-
   var checkDescriptionValidity = function () {
     var errorMessage = '';
 
@@ -304,7 +301,7 @@
   var uploadedImageContainer = document.querySelector('.img-upload__preview');
   var uploadedImage = uploadedImageContainer.querySelector('img');
 
-  var zoomResetValue = function () {
+  var resetZoomValue = function () {
     zoomValue.value = Zoom.DEFAULT + '%';
   };
 

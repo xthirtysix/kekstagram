@@ -7,22 +7,22 @@
     var successMessage = successTemplate.cloneNode(true);
     var successButton = successMessage.querySelector('.success__button');
 
-    var successMessageClose = function () {
+    var closeSuccessMessage = function () {
       successMessage.remove();
     };
 
     var onSuccessMessageClick = function (evt) {
       if (evt.target.className === 'success' || evt.target.className === 'success__button') {
-        successMessageClose();
+        closeSuccessMessage();
       }
     };
 
     var onSuccessMessageEscPress = function (evt) {
-      window.utils.isEscKeycode(evt, successMessageClose);
+      window.utils.isEscKeycode(evt, closeSuccessMessage);
     };
 
     var onSuccessButtonEnterPress = function (evt) {
-      window.utils.isEnterKeycode(evt, successMessageClose);
+      window.utils.isEnterKeycode(evt, closeSuccessMessage);
     };
 
     successMessage.addEventListener('click', onSuccessMessageClick);
@@ -42,31 +42,31 @@
     var errorRetryButton = errorButtons[0];
     var errorCancelButton = errorButtons[1];
 
-    var errorMessageClose = function () {
+    var closeErrorMessage = function () {
       errorMessage.remove();
     };
 
     var onErrorMessageClick = function (evt) {
       if (evt.target.className === 'error' || evt.target.className === 'error__button') {
-        errorMessageClose();
+        closeErrorMessage();
       }
     };
 
     var onErrorMessageEscPress = function (evt) {
-      window.utils.isEscKeycode(evt, errorMessageClose);
+      window.utils.isEscKeycode(evt, closeErrorMessage);
     };
 
     var onErrorRetryButtonClick = function () {
-      errorMessageClose();
+      closeErrorMessage();
       retryAction();
     };
 
     var onErrorCancelButtonClick = function () {
-      errorMessageClose();
+      closeErrorMessage();
     };
 
     errorMessage.addEventListener('click', onErrorMessageClick);
-    errorMessage.addEventListener('keydown', onErrorMessageEscPress);
+    document.addEventListener('keydown', onErrorMessageEscPress);
     errorRetryButton.addEventListener('click', onErrorRetryButtonClick);
     errorCancelButton.addEventListener('click', onErrorCancelButtonClick);
 

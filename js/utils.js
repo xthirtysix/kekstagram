@@ -1,5 +1,4 @@
 'use strict';
-
 (function () {
   var DEBOUNCE_TIMOUT = 500;
 
@@ -39,7 +38,7 @@
     return false;
   };
 
-  var comparator = function (a, b) {
+  var compare = function (a, b) {
     if (a < b) {
       return 1;
     } else if (a > b) {
@@ -61,7 +60,7 @@
     element.classList.remove('visually-hidden');
   };
 
-  var debounce = function (cb) {
+  var preventDebounce = function (cb) {
     var lastTimeout = null;
 
     return function () {
@@ -80,11 +79,11 @@
   window.utils = {
     shuffleArray: shuffleArray,
     hasDuplicates: hasDuplicates,
-    comparator: comparator,
+    compare: compare,
     getRandomNum: getRandomNum,
     hideVisually: hideVisually,
     cancelHideVisually: cancelHideVisually,
-    debounce: debounce,
+    preventDebounce: preventDebounce,
     isEscKeycode: function (evt, action) {
       if (evt.keyCode === Keycode.ESC) {
         action();

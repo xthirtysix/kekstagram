@@ -2,6 +2,7 @@
 (function () {
   var buttonsContainer = document.querySelector('.img-filters__form');
   var activeClass = 'img-filters__button--active';
+  var activeFilter = buttonsContainer.querySelector('.img-filters__button--active');
   var feedFilter = document.querySelector('.img-filters');
 
   var onSuccess = function (data) {
@@ -12,14 +13,13 @@
     var changeFilter = function (evt) {
       evt.preventDefault();
 
-      buttonsContainer.querySelector('.' + activeClass)
-        .classList.remove(activeClass);
-
+      activeFilter.classList.remove(activeClass);
       evt.target.classList.add(activeClass);
+      activeFilter = evt.target;
       window.render(window.filter.apply(feed, evt.target.id));
     };
 
-    var onFilterButtonsClick = window.utils.debounce(changeFilter);
+    var onFilterButtonsClick = window.utils.preventDebounce(changeFilter);
 
     buttonsContainer.addEventListener('click', onFilterButtonsClick);
   };
