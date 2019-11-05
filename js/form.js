@@ -59,7 +59,7 @@
   };
 
   // Возваращает значение насыщенности эффекта
-  var findSaturationValue = function (effect, percent) {
+  var getSaturationValue = function (effect, percent) {
     return effect.min + (effect.max - effect.min) / MAX_SATURATION_PERCENT * percent;
   };
 
@@ -69,19 +69,19 @@
   var renderEffect = function (percent) {
     switch (currentEffect) {
       case 'chrome':
-        editableImage.style.filter = 'grayscale(' + findSaturationValue(Effect.CHROME, percent) + ')';
+        editableImage.style.filter = 'grayscale(' + getSaturationValue(Effect.CHROME, percent) + ')';
         break;
       case 'sepia':
-        editableImage.style.filter = 'sepia(' + findSaturationValue(Effect.SEPIA, percent) + ')';
+        editableImage.style.filter = 'sepia(' + getSaturationValue(Effect.SEPIA, percent) + ')';
         break;
       case 'marvin':
-        editableImage.style.filter = 'invert(' + findSaturationValue(Effect.MARVIN, percent) + '%)';
+        editableImage.style.filter = 'invert(' + getSaturationValue(Effect.MARVIN, percent) + '%)';
         break;
       case 'phobos':
-        editableImage.style.filter = 'blur(' + findSaturationValue(Effect.PHOBOS, percent) + 'px)';
+        editableImage.style.filter = 'blur(' + getSaturationValue(Effect.PHOBOS, percent) + 'px)';
         break;
       case 'heat':
-        editableImage.style.filter = 'brightness(' + findSaturationValue(Effect.HEAT, percent) + ')';
+        editableImage.style.filter = 'brightness(' + getSaturationValue(Effect.HEAT, percent) + ')';
         break;
       default:
         editableImage.style.filter = '';
@@ -141,16 +141,14 @@
     }
   };
 
-  // Добавляет элементу красную рамку толщиной 2px
-  var colorInputBorder = function (input) {
-    input.style.borderColor = 'red';
-    input.style.borderWidth = '2px';
-  };
-
-  // Убирает рамку элемента
-  var resetInputBorder = function (input) {
-    input.style.borderColor = '';
-    input.style.borderWidth = '';
+  var toggleBorder = function (element, condition) {
+    if (condition) {
+      element.style.borderColor = 'red';
+      element.style.borderWidth = '2px';
+    } else {
+      element.style.borderColor = '';
+      element.style.borderWidth = '';
+    }
   };
 
   // Валидация хэштэгов загружаемой фотографии
@@ -183,12 +181,7 @@
       validateHashtagsInArray(hashtags);
     }
 
-    if (errorMessage) {
-      colorInputBorder(hashtagsInput);
-    } else {
-      resetInputBorder(hashtagsInput);
-    }
-
+    toggleBorder(hashtagsInput, errorMessage);
     hashtagsInput.setCustomValidity(errorMessage);
   };
 
@@ -204,12 +197,7 @@
       errorMessage = 'Длина описания не должна превышать ' + MAX_DESCRIPTION_LENGTH + ' символов';
     }
 
-    if (errorMessage) {
-      colorInputBorder(descriptionInput);
-    } else {
-      resetInputBorder(descriptionInput);
-    }
-
+    toggleBorder(descriptionInput, errorMessage);
     descriptionInput.setCustomValidity(errorMessage);
   };
 
@@ -248,7 +236,6 @@
       moveEvt.preventDefault();
 
       var shift = start - moveEvt.clientX;
-
       var pinOffset = sliderPin.offsetLeft - shift;
 
       start = moveEvt.clientX;
@@ -318,7 +305,6 @@
 
   // Открыть/закрыть форму редактирования(загрузки) изображения.
   var openPhotoEdit = function () {
-    resetUploadForm();
     photoEditForm.classList.remove('hidden');
     uploadFile.removeEventListener('change', onUploadButtonClick);
     photoEditClose.addEventListener('click', onPhotoEditCloseClick);
@@ -333,6 +319,7 @@
   };
 
   var closePhotoEdit = function () {
+    resetUploadForm();
     photoEditForm.classList.add('hidden');
     uploadFile.value = '';
     uploadFile.addEventListener('change', onUploadButtonClick);
@@ -345,5 +332,9 @@
     uploadSubmit.removeEventListener('click', onUploadSubmitClick);
     zoomInButton.removeEventListener('click', onZoomInButtonClick);
     zoomOutButton.removeEventListener('click', onZoomOutButtonClick);
+  };
+
+  window.form = {
+    close: closePhotoEdit
   };
 })();

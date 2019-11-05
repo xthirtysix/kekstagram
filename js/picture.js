@@ -81,7 +81,6 @@
 
   var onCommentsLoaderClick = function (evt) {
     evt.preventDefault();
-
     renderCommentFeed(commentsToRender);
   };
 
@@ -108,6 +107,7 @@
   };
 
   window.picture = {
-    open: openPicture
+    open: openPicture,
+    close: closePicture
   };
 })();
