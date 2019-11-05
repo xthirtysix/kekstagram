@@ -20,6 +20,8 @@
       if (matches) {
         var reader = new FileReader();
 
+        window.form.open();
+
         reader.addEventListener('load', function () {
           uploadedImage.src = reader.result;
         });

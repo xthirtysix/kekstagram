@@ -2,6 +2,7 @@
 (function () {
   var MAX_DESCRIPTION_LENGTH = 140;
   var MAX_SATURATION_PERCENT = 100;
+  var DEFAULT_SCALE_LEVEL = 100;
 
   var Hashtag = {
     MIN_LENGTH: 2,
@@ -30,13 +31,6 @@
       min: 1,
       max: 3
     }
-  };
-
-  var Zoom = {
-    DEFAULT: 100,
-    STEP: 25,
-    MIN: 25,
-    MAX: 100
   };
 
   var form = document.querySelector('.img-upload__form');
@@ -111,10 +105,6 @@
     checkHashtagsValidity();
     descriptionInput.value = '';
     checkDescriptionValidity();
-  };
-
-  var onUploadButtonClick = function () {
-    openPhotoEdit();
   };
 
   var onPhotoEditCloseClick = function () {
@@ -274,39 +264,34 @@
     document.addEventListener('mouseup', onMouseUp);
   };
 
-  var uploadFile = document.querySelector('#upload-file');
+  var fileChooser = document.querySelector('#upload-file');
   var photoEditClose = photoEditForm.querySelector('.img-upload__cancel');
   var uploadSubmit = photoEditForm.querySelector('.img-upload__submit');
-
-  uploadFile.addEventListener('change', onUploadButtonClick);
 
   // Zoom
   var scaleControl = form.querySelector('.img-upload__scale');
   var zoomOutButton = scaleControl.querySelector('.scale__control--smaller');
   var zoomInButton = scaleControl.querySelector('.scale__control--bigger');
-  var zoomValue = scaleControl.querySelector('.scale__control--value');
-  var uploadedImageContainer = document.querySelector('.img-upload__preview');
-  var uploadedImage = uploadedImageContainer.querySelector('img');
+  var zoomPercent = scaleControl.querySelector('.scale__control--value');
 
   var resetZoomValue = function () {
-    zoomValue.value = Zoom.DEFAULT + '%';
+    zoomPercent.value = DEFAULT_SCALE_LEVEL + '%';
   };
 
   var onZoomInButtonClick = function (evt) {
     evt.preventDefault();
-    window.zoom.in(uploadedImage, zoomValue, Zoom.MAX, Zoom.STEP);
-    zoomValue.value = window.zoom.in(uploadedImage, zoomValue.value, Zoom.MAX, Zoom.STEP);
+    zoomPercent.value = window.zoom.in(zoomPercent.value);
   };
 
-  var onZoomOutButtonClick = function () {
-    window.zoom.out(uploadedImage, zoomValue, Zoom.MIN, Zoom.STEP);
-    zoomValue.value = window.zoom.out(uploadedImage, zoomValue.value, Zoom.MIN, Zoom.STEP);
+  var onZoomOutButtonClick = function (evt) {
+    evt.preventDefault();
+    zoomPercent.value = window.zoom.out(zoomPercent.value);
   };
 
   // Открыть/закрыть форму редактирования(загрузки) изображения.
   var openPhotoEdit = function () {
+    resetUploadForm();
     photoEditForm.classList.remove('hidden');
-    uploadFile.removeEventListener('change', onUploadButtonClick);
     photoEditClose.addEventListener('click', onPhotoEditCloseClick);
     document.addEventListener('keydown', onPhotoEditFormEscPress);
     sliderPin.addEventListener('mousedown', onSliderPinMousedown);
@@ -319,10 +304,8 @@
   };
 
   var closePhotoEdit = function () {
-    resetUploadForm();
     photoEditForm.classList.add('hidden');
-    uploadFile.value = '';
-    uploadFile.addEventListener('change', onUploadButtonClick);
+    fileChooser.value = '';
     photoEditClose.removeEventListener('click', onPhotoEditCloseClick);
     document.removeEventListener('keydown', onPhotoEditFormEscPress);
     sliderPin.removeEventListener('mousedown', onSliderPinMousedown);
@@ -335,6 +318,6 @@
   };
 
   window.form = {
-    close: closePhotoEdit
+    open: openPhotoEdit
   };
 })();

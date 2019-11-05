@@ -1,32 +1,41 @@
 'use strict';
 (function () {
-  var zoomIn = function (image, currentValue, maxValue, step) {
-    var integer = parseInt(currentValue, 10);
-    var newValue;
+  var PERCENT = 100;
+  var DECIMAL_SYSTEM = 10;
 
-    if (integer < maxValue - step) {
-      newValue = integer + step;
-      currentValue = newValue + '%';
-    } else if (integer >= maxValue - step) {
-      newValue = maxValue;
-      currentValue = '100%';
-    }
-
-    image.style.transform = 'scale(' + newValue / 100 + ')';
-    return currentValue;
+  var Zoom = {
+    STEP: 25,
+    MIN: 25,
+    MAX: 100
   };
 
-  var zoomOut = function (image, currentValue, minValue, step) {
-    var integer = parseInt(currentValue, 10);
-    var newValue;
+  var uploadedImageContainer = document.querySelector('.img-upload__preview');
+  var uploadedImage = uploadedImageContainer.querySelector('img');
 
-    if (integer > minValue) {
-      newValue = integer - step;
-      currentValue = newValue + '%';
+  var scaleImage = function (image, scale) {
+    image.style.transform = 'scale(' + scale / PERCENT + ')';
+  };
+
+  var zoomIn = function (scaleLevel) {
+    var currentScale = parseInt(scaleLevel, DECIMAL_SYSTEM);
+
+    if (currentScale < Zoom.MAX) {
+      currentScale += Zoom.STEP;
     }
 
-    image.style.transform = 'scale(' + newValue / 100 + ')';
-    return currentValue;
+    scaleImage(uploadedImage, currentScale);
+    return currentScale + '%';
+  };
+
+  var zoomOut = function (scaleLevel) {
+    var currentScale = parseInt(scaleLevel, DECIMAL_SYSTEM);
+
+    if (currentScale > Zoom.MIN) {
+      currentScale -= Zoom.STEP;
+    }
+
+    scaleImage(uploadedImage, currentScale);
+    return currentScale + '%';
   };
 
   window.zoom = {

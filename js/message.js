@@ -65,9 +65,14 @@
       closeErrorMessage();
     };
 
+    if (!retryAction) {
+      errorRetryButton.remove();
+    } else {
+      errorRetryButton.addEventListener('click', onErrorRetryButtonClick);
+    }
+
     errorMessage.addEventListener('click', onErrorMessageClick);
     document.addEventListener('keydown', onErrorMessageEscPress);
-    errorRetryButton.addEventListener('click', onErrorRetryButtonClick);
     errorCancelButton.addEventListener('click', onErrorCancelButtonClick);
 
     errorTitle.textContent = error;
