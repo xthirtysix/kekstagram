@@ -6,7 +6,8 @@
   var Zoom = {
     STEP: 25,
     MIN: 25,
-    MAX: 100
+    MAX: 100,
+    DEFAULT: 100
   };
 
   var uploadedImageContainer = document.querySelector('.img-upload__preview');
@@ -38,8 +39,13 @@
     return currentScale + '%';
   };
 
+  var zoomReset = function () {
+    uploadedImage.style.transform = '';
+  };
+
   window.zoom = {
     in: zoomIn,
-    out: zoomOut
+    out: zoomOut,
+    reset: zoomReset
   };
 })();

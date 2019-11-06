@@ -16,7 +16,7 @@
       .sort(function (a, b) {
         var orderPriority = b.comments.length - a.comments.length;
         if (!orderPriority) {
-          orderPriority = window.utils.comparator(a.likes, b.likes);
+          orderPriority = window.utils.compare(a.likes, b.likes);
         }
 
         return orderPriority;
