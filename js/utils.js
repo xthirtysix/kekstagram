@@ -60,7 +60,7 @@
     element.classList.remove('visually-hidden');
   };
 
-  var preventDebounce = function (cb) {
+  var debounce = function (cb) {
     var lastTimeout = null;
 
     return function () {
@@ -83,7 +83,7 @@
     getRandomNum: getRandomNum,
     hideVisually: hideVisually,
     cancelHideVisually: cancelHideVisually,
-    preventDebounce: preventDebounce,
+    debounce: debounce,
     isEscKeycode: function (evt, action) {
       if (evt.keyCode === Keycode.ESC) {
         action();

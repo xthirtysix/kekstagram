@@ -68,8 +68,6 @@
           errorMessage = 'Допустимая длина хэштэга - от ' + Hashtag.MIN_LENGTH +
             ' до ' + Hashtag.MAX_LENGTH + ' символов, включая "#"';
           break;
-        } else {
-          errorMessage = '';
         }
       }
     };

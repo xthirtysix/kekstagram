@@ -19,7 +19,7 @@
       window.render(window.filter.apply(feed, evt.target.id));
     };
 
-    var onFilterButtonsClick = window.utils.preventDebounce(changeFilter);
+    var onFilterButtonsClick = window.utils.debounce(changeFilter);
 
     buttonsContainer.addEventListener('click', onFilterButtonsClick);
   };
