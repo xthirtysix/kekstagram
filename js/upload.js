@@ -1,6 +1,7 @@
 'use strict';
 (function () {
   var EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif'];
+  var ERROR_MESSAGE = 'Неверное расширение файла';
 
   var fileChooser = document.querySelector('.img-upload__input');
   var uploadedImageContainer = document.querySelector('.img-upload__preview');
@@ -19,13 +20,15 @@
       if (matches) {
         var reader = new FileReader();
 
+        window.form.open();
+
         reader.addEventListener('load', function () {
           uploadedImage.src = reader.result;
         });
 
         reader.readAsDataURL(file);
       } else {
-        window.message.error();
+        window.message.error(ERROR_MESSAGE);
       }
     }
   });

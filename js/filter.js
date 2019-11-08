@@ -16,7 +16,7 @@
       .sort(function (a, b) {
         var orderPriority = b.comments.length - a.comments.length;
         if (!orderPriority) {
-          orderPriority = window.utils.comparator(a.likes, b.likes);
+          orderPriority = window.utils.compare(a.likes, b.likes);
         }
 
         return orderPriority;
@@ -29,11 +29,11 @@
     'filter-discussed': filterDiscussed
   };
 
-  var useFilter = function (feed, id) {
+  var applyFilter = function (feed, id) {
     return buttonIdToFilter[id](feed);
   };
 
   window.filter = {
-    apply: useFilter
+    apply: applyFilter
   };
 })();

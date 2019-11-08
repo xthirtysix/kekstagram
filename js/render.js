@@ -28,8 +28,8 @@
     pictureFeed.innerHTML = '';
     pictureFeed.appendChild(uploadForm);
 
-    data.forEach(function (el) {
-      pictureFeed.appendChild(render(el));
+    data.forEach(function (element) {
+      pictureFeed.appendChild(render(element));
     });
   };
 

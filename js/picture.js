@@ -37,8 +37,8 @@
       window.utils.hideVisually(commentsLoader);
     }
 
-    comments.splice(0, COMMENTS_NUM).forEach(function (el) {
-      fragment.appendChild(renderComment(el));
+    comments.splice(0, COMMENTS_NUM).forEach(function (element) {
+      fragment.appendChild(renderComment(element));
       commentCounter++;
     });
 
@@ -81,7 +81,6 @@
 
   var onCommentsLoaderClick = function (evt) {
     evt.preventDefault();
-
     renderCommentFeed(commentsToRender);
   };
 
@@ -108,6 +107,7 @@
   };
 
   window.picture = {
-    open: openPicture
+    open: openPicture,
+    close: closePicture
   };
 })();

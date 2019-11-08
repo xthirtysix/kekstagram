@@ -1,157 +1,53 @@
 'use strict';
 (function () {
   var MAX_DESCRIPTION_LENGTH = 140;
-  var MAX_SATURATION_PERCENT = 100;
+  var DEFAULT_ZOOM = '100%';
 
-  var MIN_HASTAG_LENGTH = 2;
-  var MAX_HASHTAG_LENGTH = 20;
-  var MAX_HASHTAG_COUNT = 5;
-
-  var Effect = {
-    CHROME: {
-      min: 0,
-      max: 1
-    },
-    SEPIA: {
-      min: 0,
-      max: 1
-    },
-    MARVIN: {
-      min: 0,
-      max: 100
-    },
-    PHOBOS: {
-      min: 0,
-      max: 3
-    },
-    HEAT: {
-      min: 1,
-      max: 3
-    }
+  var Hashtag = {
+    MIN_LENGTH: 2,
+    MAX_LENGTH: 20,
+    COUNT: 5
   };
 
-  var Zoom = {
-    DEFAULT: 100,
-    STEP: 25,
-    MIN: 25,
-    MAX: 100
-  };
-
-  var form = document.querySelector('.img-upload__form');
+  var form = document.querySelector('#upload-select-image');
   var photoEditForm = form.querySelector('.img-upload__overlay');
-  var effectsList = photoEditForm.querySelector('.effects__list');
-  var currentEffect = effectsList.querySelector('input[name=effect]:checked').value;
+  var defaultEffect = form.querySelector('#effect-none');
+  var hashtagsInput = form.querySelector('.text__hashtags');
+  var descriptionInput = photoEditForm.querySelector('.text__description');
 
-  var sliderLine = photoEditForm.querySelector('.effect-level__line');
-  var sliderPin = sliderLine.querySelector('.effect-level__pin');
-  var depthLevel = sliderLine.querySelector('.effect-level__depth');
-
-  // Меняет значение текущего эффекта
-  var changeEffect = function () {
-    currentEffect = photoEditForm.querySelector('input[name=effect]:checked').value;
-  };
-
-  var resetSlider = function () {
-    sliderPin.style.left = sliderLine.offsetWidth + 'px';
-    depthLevel.style.width = MAX_SATURATION_PERCENT + '%';
-  };
-
-  // Возваращает значение насыщенности эффекта
-  var findSaturationValue = function (effect, percent) {
-    return effect.min + (effect.max - effect.min) / MAX_SATURATION_PERCENT * percent;
-  };
-
-  var editableImage = photoEditForm.querySelector('.img-upload__preview img');
-
-  // Отображает эффект фильтра
-  var renderEffect = function (percent) {
-    switch (currentEffect) {
-      case 'chrome':
-        editableImage.style = 'filter: grayscale(' + findSaturationValue(Effect.CHROME, percent) + ')';
-        break;
-      case 'sepia':
-        editableImage.style = 'filter: SEPIA(' + findSaturationValue(Effect.SEPIA, percent) + ')';
-        break;
-      case 'marvin':
-        editableImage.style = 'filter: invert(' + findSaturationValue(Effect.MARVIN, percent) + '%)';
-        break;
-      case 'phobos':
-        editableImage.style = 'filter: blur(' + findSaturationValue(Effect.PHOBOS, percent) + 'px)';
-        break;
-      case 'heat':
-        editableImage.style = 'filter: brightness(' + findSaturationValue(Effect.HEAT, percent) + ')';
-        break;
-      default:
-        editableImage.style = '';
-        break;
-    }
-  };
-
-  var onEffectClick = function (evt) {
-    if (evt.target.name === 'effect') {
-      changeEffect();
-      toggleSlider();
-      resetSlider();
-      zoomResetValue();
-      renderEffect(MAX_SATURATION_PERCENT);
-    }
-  };
-
-  var defaultEffect = effectsList.querySelector('#effect-none');
-
-  // Сбрасывает форму редактирования(загрузки) изображения на значения по умолчанию
+  // Сбрасывает форму редактирования изображения до значений по умолчанию
   var resetUploadForm = function () {
-    zoomValue.value = Zoom.DEFAULT;
-    hashtagsInput.value = '';
-    descriptionInput.value = '';
+    zoomPercent.value = DEFAULT_ZOOM;
+    window.zoom.reset();
+    window.slider.reset();
     defaultEffect.checked = true;
-    zoomResetValue();
-    changeEffect();
-    toggleSlider();
-    renderEffect();
+    window.effects.render();
+    hashtagsInput.value = '';
     checkHashtagsValidity();
+    descriptionInput.value = '';
     checkDescriptionValidity();
-    resetInputBorder(hashtagsInput);
-    resetInputBorder(descriptionInput);
-  };
-
-  var onUploadButtonClick = function () {
-    openPhotoEdit();
   };
 
   var onPhotoEditCloseClick = function () {
     closePhotoEdit();
   };
 
-  var hashtagsInput = document.querySelector('.text__hashtags');
-
   var onPhotoEditFormEscPress = function (evt) {
-    if (hashtagsInput !== document.activeElement) {
+    if (hashtagsInput !== document.activeElement &&
+      descriptionInput !== document.activeElement) {
       window.utils.isEscKeycode(evt, closePhotoEdit);
     }
   };
 
-  var slider = photoEditForm.querySelector('.img-upload__effect-level');
-
-  // Скрывает/показывает ползунок уровня эффекта
-  var toggleSlider = function () {
-    if (currentEffect === 'none') {
-      slider.classList.add('hidden');
+  // Меняет стиль границы элемента
+  var toggleBorder = function (element, condition) {
+    if (condition) {
+      element.style.borderColor = 'red';
+      element.style.borderWidth = '2px';
     } else {
-      slider.classList.remove('hidden');
+      element.style.borderColor = '';
+      element.style.borderWidth = '';
     }
-  };
-
-  // Добавляет элементу красную рамку толщиной 2px
-  var colorInputBorder = function (input) {
-    input.style.borderColor = 'red';
-    input.style.borderWidth = '2px';
-  };
-
-  // Убирает рамку элемента
-  var resetInputBorder = function (input) {
-    input.style.borderColor = '';
-    input.style.borderWidth = '';
   };
 
   // Валидация хэштэгов загружаемой фотографии
@@ -167,8 +63,10 @@
         if (array[i][0] !== '#') {
           errorMessage = 'Хэштэг должен начинаться с "#"';
           break;
-        } else if (array[i].length < MIN_HASTAG_LENGTH || array[i].length > MAX_HASHTAG_LENGTH) {
-          errorMessage = 'Допустимая длина хэштэга - от ' + MIN_HASTAG_LENGTH + ' до ' + MAX_HASHTAG_LENGTH + ' символов, включая "#"';
+        } else if (array[i].length < Hashtag.MIN_LENGTH ||
+          array[i].length > Hashtag.MAX_LENGTH) {
+          errorMessage = 'Допустимая длина хэштэга - от ' + Hashtag.MIN_LENGTH +
+            ' до ' + Hashtag.MAX_LENGTH + ' символов, включая "#"';
           break;
         } else {
           errorMessage = '';
@@ -176,20 +74,15 @@
       }
     };
 
-    if (hashtags.length > MAX_HASHTAG_COUNT) {
-      errorMessage = 'Макимальное количество хэштэгов - ' + MAX_HASHTAG_COUNT;
+    if (hashtags.length > Hashtag.COUNT) {
+      errorMessage = 'Макимальное количество хэштэгов - ' + Hashtag.COUNT;
     } else if (window.utils.hasDuplicates(hashtags)) {
-      errorMessage = 'Хэштэги не чувствительны к регистру, и не должны повторяться.';
+      errorMessage = 'Хэштэги нечувствительны к регистру, и не должны повторяться.';
     } else {
       validateHashtagsInArray(hashtags);
     }
 
-    if (errorMessage) {
-      colorInputBorder(hashtagsInput);
-    } else {
-      resetInputBorder(hashtagsInput);
-    }
-
+    toggleBorder(hashtagsInput, errorMessage);
     hashtagsInput.setCustomValidity(errorMessage);
   };
 
@@ -198,8 +91,6 @@
   };
 
   // Валидация описания загружаемой фотографии
-  var descriptionInput = photoEditForm.querySelector('.text__description');
-
   var checkDescriptionValidity = function () {
     var errorMessage = '';
 
@@ -207,12 +98,7 @@
       errorMessage = 'Длина описания не должна превышать ' + MAX_DESCRIPTION_LENGTH + ' символов';
     }
 
-    if (errorMessage) {
-      colorInputBorder(descriptionInput);
-    } else {
-      resetInputBorder(descriptionInput);
-    }
-
+    toggleBorder(descriptionInput, errorMessage);
     descriptionInput.setCustomValidity(errorMessage);
   };
 
@@ -220,13 +106,14 @@
     checkDescriptionValidity();
   };
 
+  // Отправить фотографию
+  var sendData = function () {
+    return window.backend.send(new FormData(form), onSuccess, onError);
+  };
+
   var onSuccess = function () {
     window.message.success();
     closePhotoEdit();
-  };
-
-  var sendData = function () {
-    return window.backend.send(new FormData(form), onSuccess, onError);
   };
 
   var onError = function (message) {
@@ -241,93 +128,42 @@
     }
   };
 
-  // Перемещение ползунка
-  var onSliderPinMousedown = function (evt) {
-    evt.preventDefault();
-
-    var start = evt.clientX;
-
-    var onMouseMove = function (moveEvt) {
-      moveEvt.preventDefault();
-
-      var shift = start - moveEvt.clientX;
-
-      var pinOffset = sliderPin.offsetLeft - shift;
-
-      start = moveEvt.clientX;
-
-      var getValue = function () {
-        return Math.round(pinOffset / (sliderLine.offsetWidth / MAX_SATURATION_PERCENT));
-      };
-
-      if (pinOffset >= 0 && pinOffset <= sliderLine.offsetWidth) {
-        sliderPin.style.left = pinOffset + 'px';
-      } else {
-        return;
-      }
-
-      if (sliderPin.offsetLeft < 0) {
-        sliderPin.offsetLeft = 0;
-      } else if (sliderPin.offsetLeft > sliderLine.offsetWidth) {
-        sliderPin.offsetLeft = sliderLine.offsetWidth;
-      }
-
-      var value = getValue();
-
-      renderEffect(value);
-      depthLevel.style.width = value + '%';
-      document.querySelector('.effect-level__value').value = value;
-    };
-
-    var onMouseUp = function (upEvt) {
-      upEvt.preventDefault();
-
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-    };
-
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-  };
-
-  var uploadFile = document.querySelector('#upload-file');
+  var fileChooser = document.querySelector('#upload-file');
   var photoEditClose = photoEditForm.querySelector('.img-upload__cancel');
   var uploadSubmit = photoEditForm.querySelector('.img-upload__submit');
 
-  uploadFile.addEventListener('change', onUploadButtonClick);
-
-  // Zoom
+  // Обработчики зума
   var scaleControl = form.querySelector('.img-upload__scale');
   var zoomOutButton = scaleControl.querySelector('.scale__control--smaller');
   var zoomInButton = scaleControl.querySelector('.scale__control--bigger');
-  var zoomValue = scaleControl.querySelector('.scale__control--value');
-  var uploadedImageContainer = document.querySelector('.img-upload__preview');
-  var uploadedImage = uploadedImageContainer.querySelector('img');
-
-  var zoomResetValue = function () {
-    zoomValue.value = Zoom.DEFAULT + '%';
-  };
+  var zoomPercent = scaleControl.querySelector('.scale__control--value');
 
   var onZoomInButtonClick = function (evt) {
     evt.preventDefault();
-    window.zoom.in(uploadedImage, zoomValue, Zoom.MAX, Zoom.STEP);
-    zoomValue.value = window.zoom.in(uploadedImage, zoomValue.value, Zoom.MAX, Zoom.STEP);
+    zoomPercent.value = window.zoom.in(zoomPercent.value);
   };
 
-  var onZoomOutButtonClick = function () {
-    window.zoom.out(uploadedImage, zoomValue, Zoom.MIN, Zoom.STEP);
-    zoomValue.value = window.zoom.out(uploadedImage, zoomValue.value, Zoom.MIN, Zoom.STEP);
+  var onZoomOutButtonClick = function (evt) {
+    evt.preventDefault();
+    zoomPercent.value = window.zoom.out(zoomPercent.value);
+  };
+
+  // Обработчики эффектов
+  var effectsList = form.querySelector('.effects__list');
+
+  var onEffectsClick = function () {
+    window.slider.reset();
+    window.effects.render();
   };
 
   // Открыть/закрыть форму редактирования(загрузки) изображения.
   var openPhotoEdit = function () {
     resetUploadForm();
+    window.slider.init();
     photoEditForm.classList.remove('hidden');
-    uploadFile.removeEventListener('change', onUploadButtonClick);
+    effectsList.addEventListener('click', onEffectsClick);
     photoEditClose.addEventListener('click', onPhotoEditCloseClick);
     document.addEventListener('keydown', onPhotoEditFormEscPress);
-    sliderPin.addEventListener('mousedown', onSliderPinMousedown);
-    effectsList.addEventListener('click', onEffectClick);
     hashtagsInput.addEventListener('input', onHashtagsInput);
     descriptionInput.addEventListener('input', onDescriptionInput);
     uploadSubmit.addEventListener('click', onUploadSubmitClick);
@@ -336,17 +172,20 @@
   };
 
   var closePhotoEdit = function () {
+    window.slider.halt();
+    fileChooser.value = '';
     photoEditForm.classList.add('hidden');
-    uploadFile.value = '';
-    uploadFile.addEventListener('change', onUploadButtonClick);
+    effectsList.addEventListener('click', onEffectsClick);
     photoEditClose.removeEventListener('click', onPhotoEditCloseClick);
     document.removeEventListener('keydown', onPhotoEditFormEscPress);
-    sliderPin.removeEventListener('mousedown', onSliderPinMousedown);
-    effectsList.removeEventListener('click', onEffectClick);
     hashtagsInput.removeEventListener('input', onHashtagsInput);
     descriptionInput.removeEventListener('input', onDescriptionInput);
     uploadSubmit.removeEventListener('click', onUploadSubmitClick);
     zoomInButton.removeEventListener('click', onZoomInButtonClick);
     zoomOutButton.removeEventListener('click', onZoomOutButtonClick);
+  };
+
+  window.form = {
+    open: openPhotoEdit
   };
 })();

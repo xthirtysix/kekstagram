@@ -1,5 +1,4 @@
 'use strict';
-
 (function () {
   var NAMES = [
     'Анастасия',
@@ -27,11 +26,11 @@
   var AVATARS_COUNT = 6;
   var MAX_MESSAGE_LENGTH = 2;
 
-  var CommentsNum = {
+  var CommentsNumber = {
     MIN: 1,
     MAX: 5
   };
-  var LikesNum = {
+  var LikesNumber = {
     MIN: 15,
     MAX: 200
   };
@@ -42,10 +41,10 @@
     var message = '';
 
     for (var i = 0; i < length; i++) {
-      if (i === 0) {
-        message = message + shuffledMessages[i];
-      } else {
-        message = message + ' ' + shuffledMessages[i];
+      message += ' ' + shuffledMessages[i];
+
+      if (!i) {
+        message += shuffledMessages[i];
       }
     }
     return message;
@@ -68,7 +67,7 @@
   // Возвращает массив пользовательских комментариев
   var generateCommentsFeed = function () {
     var comments = [];
-    var commentsCount = window.utils.getRandomNum(CommentsNum.MIN, CommentsNum.MAX);
+    var commentsCount = window.utils.getRandomNum(CommentsNumber.MIN, CommentsNumber.MAX);
 
     for (var i = 0; i < commentsCount; i++) {
       comments.push(generateComment());
@@ -79,19 +78,19 @@
 
   // Возвращает массив сгенерированных пользовательских постов
   var generateFeed = function (length) {
-    var feed = [];
+    var previews = [];
 
     for (var i = 0; i < length; i++) {
       var post = {};
 
       post.url = getPostImageUrl(i + 1);
       post.description = 'Сфотографировано на калькулятор';
-      post.likes = window.utils.getRandomNum(LikesNum.MIN, LikesNum.MAX);
+      post.likes = window.utils.getRandomNum(LikesNumber.MIN, LikesNumber.MAX);
       post.comments = generateCommentsFeed();
-      feed.push(post);
+      previews.push(post);
     }
 
-    return feed;
+    return previews;
   };
 
   window.data = {
